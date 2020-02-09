@@ -1,0 +1,48 @@
+;TODO: 
+; - finish setup
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC
+full-at = 99
+
+
+;format-full-background = ${colors.my_color4}
+format-full-background = ${colors.my_background}
+format-charging-background = ${colors.my_background}
+format-charging = "⁣  <label-charging> <animation-charging> "
+format-charging-underline = ${colors.my_color2}
+
+;format-discharging-background = ${colors.my_color4}
+format-discharging-background = ${colors.my_background}
+format-discharging = "⁣ <label-discharging> <ramp-capacity> "
+format-discharging-underline = ${self.format-charging-underline}
+
+;format-full-prefix-foreground = ${colors.my_color4}
+format-full-prefix-foreground = ${colors.my_background}
+format-full-underline = ${self.format-charging-underline}
+
+format-charing-background = ${colors.my_background}
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+;ramp-capacity-foreground = ${colors.my_foreground}
+;ramp-capacity-foreground = ${colors.my_background}
+ramp-capacity-foreground = ${colors.my_foreground}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+;animation-charging-foreground = ${colors.my_foreground}
+;animation-charging-foreground = ${colors.my_background}
+animation-charging-foreground = ${colors.my_foreground}
+animation-charging-framerate = 750
+
+
+; vim:ft=dosini

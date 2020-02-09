@@ -1,0 +1,228 @@
+set $mod Mod4
+
+font pango:Roboto 16
+
+floating_modifier $mod
+
+
+bindsym $mod+Return exec konsole 
+
+# kill focused window
+bindsym $mod+Shift+q kill
+
+# start dmenu (a program launcher)
+bindsym $mod+d exec rofi -show run -lines 3 -eh 2 -opacity "85" -bw 0 -bc "$bg-color" -bg "$bg-color" -fg "$text-color" -hlbg "$bg-color" -hlfg "#9575cd" -font "pango 22"
+
+
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# split in horizontal orientation
+bindsym $mod+o split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+#bindsym $mod+d focus child
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# Exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # Pressing left will shrink the window’s width.
+        # Pressing right will grow the window’s width.
+        # Pressing up will shrink the window’s height.
+        # Pressing down will grow the window’s height.
+        bindsym h resize shrink width 2 px or 2 ppt
+        bindsym k resize grow height 2 px or 2 ppt
+       	bindsym j resize shrink height 2 px or 2 ppt
+        bindsym l resize grow width 2 px or 2 ppt
+        # back to normal: Enter or Escape or $mod+r
+        #
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# :::::::::: disable window border :::::::::
+new_window pixel 2
+new_float pixel 2
+
+# Background
+exec --no-startup-id feh --bg-fill $HOME/Pictures/desktop-pictures/midnight-arcade.png
+
+# Gaps
+gaps inner 20
+gaps outer 0
+#smart_borders on
+
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: k|j|0 (local), Shift + k|j|0 (global)
+set $mode_gaps_inner Inner Gaps: k|j|0 (local), Shift + k|j|0 (global)
+bindsym $mod+Shift+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+        bindsym o      mode "$mode_gaps_outer"
+        bindsym i      mode "$mode_gaps_inner"
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_inner" {
+        bindsym j  gaps inner current plus 5
+        bindsym k gaps inner current minus 5
+        bindsym 0     gaps inner current set 0
+
+        bindsym Shift+j  gaps inner all plus 5
+        bindsym Shift+k gaps inner all minus 5
+        bindsym Shift+0     gaps inner all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_outer" {
+        bindsym j  gaps outer current plus 5
+        bindsym k gaps outer current minus 5
+        bindsym 0     gaps outer current set 0
+
+        bindsym Shift+j  gaps outer all plus 5
+        bindsym Shift+k gaps outer all minus 5
+        bindsym Shift+0     gaps outer all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+
+########################
+
+set $bg-color 	         #2f343f
+set $inactive-bg-color   #2f343f
+set $text-color          #f3f4f5
+set $inactive-text-color #676E7D
+set $urgent-bg-color     #E53935
+
+# window colors
+#                       border              background         text                 indicator
+client.focused          $bg-color           $bg-color          $text-color          #00ff00
+client.unfocused        $inactive-bg-color $inactive-bg-color $inactive-text-color #00ff00
+client.focused_inactive $inactive-bg-color $inactive-bg-color $inactive-text-color #00ff00
+client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color          #00ff00
+
+exec_always --no-startup-id compton
+
+
+#keyboard layout
+
+set $keyboard_layout Keyboard Layout: (i) Italian, (e) US English
+mode "$keyboard_layout" {
+
+bindsym e exec --no-startup-id setxkbmap us, mode "default"
+bindsym i exec --no-startup-id setxkbmap it,  mode "default"
+
+# back to normal: Enter or Escape
+bindsym Return mode "default"
+bindsym Escape mode "default"
+}
+bindsym $mod+shift+Z mode "$keyboard_layout"
+
+
+#polybar
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh &
+
+
+#MODE SYSTEM
+#TODO
+set $mode_system System (l) lock
+mode "$mode_system" {
+    bindsym l exec --no-startup-id $HOME/.config/lock/lock.sh mode "default"
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Escape mode "$mode_system"
+bindsym Scroll_Lock exec --no-startup-id $HOME/.config/lock/lock.sh mode "default"
+
+# ASSIGNS
+assign [class="Thunderbird"] $ws10
+
+# MULTI-MONITORS
+workspace $ws2 output VGA-1
+workspace $ws6 output VGA-1
+# move workspare to right left monitor
+bindsym $mod+m move workspace to output left

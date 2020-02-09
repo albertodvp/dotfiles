@@ -1,0 +1,23 @@
+[colors]
+;My colors are set from .Xresources to match everything else
+my_background 	= ${xrdb:background}
+my_foreground 	= ${xrdb:foreground}
+my_color0	= ${xrdb:color0}
+my_color1	= ${xrdb:color1}
+my_color2	= ${xrdb:color2}
+my_color3	= ${xrdb:color3}
+my_color4	= ${xrdb:color4}
+my_color5	= ${xrdb:color5}
+my_color6	= ${xrdb:color6}
+my_color7	= ${xrdb:color7}
+my_color8	= ${xrdb:color8}
+my_color9	= ${xrdb:color9}
+my_color10	= ${xrdb:color10}
+my_color11	= ${xrdb:color11}
+my_color12	= ${xrdb:color12}
+my_color13	= ${xrdb:color13}
+my_color14	= ${xrdb:color14}
+my_color15	= ${xrdb:color15}
+
+
+include-file=~/.config/polybar/top-bar

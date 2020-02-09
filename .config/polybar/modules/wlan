@@ -1,0 +1,18 @@
+;TODO: 
+; - change color
+; - finish setup
+
+[module/wlan]
+type = internal/network
+interface = wlp3s0
+interval = 3.0
+
+;format-connected-background = ${colors.my_background}
+format-connected = "  <label-connected>  "
+format-connected-underline = #9f78e1 
+
+format-disconnected = <label-disconnected>
+;format-disconnected-underline = ${self.format-connected-underline}
+;label-disconnected-foreground = ${colors.foreground-alt}
+
+; vim:ft=dosini

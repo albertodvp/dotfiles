@@ -1,0 +1,72 @@
+;TODO: 
+; - finish setup
+
+[module/i3]
+type = internal/i3
+;
+;strip-wsnumbers = true
+;
+;label-focused-padding = 3
+;label-unfocused-padding = 3
+;
+;label-focused-background = ${colors.background-alt}
+label-unfocused-background = ${colors.my_background}
+label-unfocused-foreground = ${colors.my_foreground}
+;label-unfocused-underline = ${colors.my_foreground}
+;
+;label-mode-padding = 0
+;label-mode-background = ${colors.background-unf}
+;
+;label-visible-underline = ${colors.my_background}
+;label-visible-padding = 4
+
+
+; Available tokens:
+;   %mode%
+; Default: %mode%
+label-mode = %mode%
+label-mode-padding = 2
+;label-mode-background = ${colors.my_background}
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+;   %output%
+; Default: %icon%  %name%
+label-focused = %index%
+;label-focused-foreground = ${colors.my_foreground}
+label-focused-foreground = ${colors.my_foreground}
+label-focused-background = ${colors.my_background}
+label-focused-underline = ${colors.my_color4}
+label-focused-padding = 2
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+; Default: %icon%  %name%
+label-unfocused = %index%
+label-unfocused-padding = 2
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+; Default: %icon%  %name%
+label-visible = %index%
+label-visible-underline = ${colors.my_foreground}
+label-visible-padding = 4
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+; Default: %icon%  %name%
+label-urgent = %index%
+label-urgent-foreground = ${colors.my_foreground}
+label-urgent-background = ${colors.my_background}
+label-urgent-underline = ${colors.my_color8}
+label-urgent-padding = 2
+
+; vim:ft=dosini
