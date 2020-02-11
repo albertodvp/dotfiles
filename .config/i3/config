@@ -220,6 +220,7 @@ bindsym Scroll_Lock exec --no-startup-id $HOME/.config/lock/lock.sh mode "defaul
 
 # ASSIGNS
 assign [class="Thunderbird"] $ws10
+assign [class="matplotlib"] $ws9
 
 # MULTI-MONITORS
 workspace $ws2 output VGA-1
