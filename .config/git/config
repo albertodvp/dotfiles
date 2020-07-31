@@ -1,3 +1,7 @@
+[user]
+	name = Alberto Fanton
+	email = alberto.fanton@protonmail.com
+	
 [alias]
     co = checkout
     cob = checkout -b
@@ -11,3 +15,16 @@
 
     # Complex aliases
     lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+    cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d"
+
+[core]
+    editor = emacs -nw
+[includeIf "gitdir/i:~/Work/"]
+    path = ~/Work/gitconfig_work
+    
+[pull]
+    ff = only
+        
+[credential]
+        helper = cache --timeout=300

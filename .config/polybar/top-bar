@@ -4,7 +4,6 @@ include-file=~/.config/polybar/modules/eth
 include-file=~/.config/polybar/modules/date
 include-file=~/.config/polybar/modules/xwindow
 include-file=~/.config/polybar/modules/battery
-include-file=~/.config/polybar/modules/power-menu
 
 [bar/top-bar]
 monitor = ${env:MONITOR:}
@@ -32,10 +31,9 @@ padding-right = 0
 module-margin-left = 0
 module-margin-right = 0
 
-font-0 = Hack:fontformat=truetype:size=9;1
-font-1 = Hack:fontformat=truetype:size=9;1
+font-0 = Hack:fontformat=truetype:size=11;1
+font-1 = Hack:fontformat=truetype:size=11;1
 
-;modules-left = powermenu i3 xwindow
 modules-left = i3 xwindow
 modules-center = date 
 modules-right = wlan battery
@@ -47,5 +45,3 @@ tray-offset-x = 0%
 tray-maxsize = 18
 tray-detached = false
 tray-background = ${colors.my_background}
-
-; vim:ft=dosini

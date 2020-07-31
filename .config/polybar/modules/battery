@@ -1,6 +1,3 @@
-;TODO: 
-; - finish setup
-
 [module/battery]
 type = internal/battery
 battery = BAT0
@@ -44,5 +41,3 @@ animation-charging-4 = 
 animation-charging-foreground = ${colors.my_foreground}
 animation-charging-framerate = 750
 
-
-; vim:ft=dosini

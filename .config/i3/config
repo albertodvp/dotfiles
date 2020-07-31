@@ -127,7 +127,7 @@ exec --no-startup-id feh --bg-fill $HOME/Pictures/desktop-pictures/midnight-arca
 # Gaps
 gaps inner 20
 gaps outer 0
-#smart_borders on
+smart_borders on
 
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: k|j|0 (local), Shift + k|j|0 (global)
@@ -218,12 +218,6 @@ mode "$mode_system" {
 bindsym $mod+Escape mode "$mode_system"
 bindsym Scroll_Lock exec --no-startup-id $HOME/.config/lock/lock.sh mode "default"
 
-# ASSIGNS
-assign [class="Thunderbird"] $ws10
-assign [class="matplotlib"] $ws9
 
-# MULTI-MONITORS
-workspace $ws2 output VGA-1
-workspace $ws6 output VGA-1
 # move workspare to right left monitor
 bindsym $mod+m move workspace to output left

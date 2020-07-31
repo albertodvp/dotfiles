@@ -1,0 +1,124 @@
+* Emacs configuation
+
+** User details
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Alberto Fanton")
+(setq user-mail-address "alberto.fanton@protonmail.com")
+#+END_SRC
+
+** Packages
+#+BEGIN_SRC emacs-lisp
+(defvar myPackages '(elpy
+                     flycheck
+                     py-autopep8
+                     blacken
+                     flycheck
+                     pyimport
+                     py-isort
+                     magit
+                     markdown-mode
+                     org
+                     org-journal
+                     transpose-frame
+                     toml-mode
+                     yaml-mode
+		     haskell-mode
+		     ;lsp-haskell
+		     ;lsp-ui
+		     )
+ "Default packages")
+(require 'cl)
+(defun myPackages-installed-p()
+ (loop for pkg in myPackages
+  when(not (package-installed-p pkg)) do(return nil)
+  finally (return t)))
+
+(unless(myPackages-installed-p)
+ (message "%s" "Refreshing package database...")
+ (package-refresh-contents)
+ (dolist(pkg myPackages)
+    (when(not (package-installed-p pkg))
+     (package-install pkg))))
+#+END_SRC
+
+** Setup
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-splash-screen t
+ initial-scratch-message nil
+ initial-major-mode 'org-mode)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+#+END_SRC
+
+** Theme
+#+BEGIN_SRC emacs-lisp
+(load-theme 'wombat t)
+#+END_SRC
+** Misc
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+(ac-config-default)
+#+END_SRC
+** Magit
+#+BEGIN_SRC emacs-lisp
+(global-set-key(kbd "C-x g") 'magit-status)
+#+END_SRC
+** ORG
+Journal
+#+BEGIN_SRC emacs-lisp
+(global-set-key(kbd "C-c e") 'org-journal-new-entry)
+(global-set-key(kbd "C-c c") 'org-capture)
+
+(setq org-capture-templates '(("j" "Journal prompts")
+                              ("jm" "Morning journal prompts entry" entry(function org-journal-find-location)
+                               (file "/home/alberto/Documents/journal/templates/daily-template-morning.org"))
+                              ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
+                               (file "/home/alberto/Documents/journal/templates/daily-template-evening.org"))))
+
+#+END_SRC
+** Python
+#+BEGIN_SRC emacs-lisp
+(elpy-enable)
+
+(when(require 'flycheck nil t)
+ (setq elpy-modules(delq 'elpy-module-flymake elpy-modules))
+ (add-hook 'elpy-mode-hook 'flycheck-mode))
+
+(require 'py-autopep8)
+
+(add-hook 'elpy-mode-hook
+ (lambda ()
+  (add-hook 'before-save-hook 'pyimport-remove-unused t t)
+  (add-hook 'before-save-hook 'py-isort-buffer t t)
+  (add-hook 'before-save-hook 'py-autopep8-buffer t t)
+  (add-hook 'before-save-hook 'blacken-buffer t t)))
+
+#+END_SRC
+
+** Haskell
+#+BEGIN_SRC emacs-lisp
+;(add-hook 'haskell-mode-hook 'flycheck-mode)
+
+;;; haskell
+(use-package haskell-mode
+  :hook (haskell-mode . cc/haskell--setup)
+  :init
+  (defun cc/haskell--setup ()
+;    (lsp)
+;    (lsp-ui-mode)
+    (flycheck-mode)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled)))
+;    (setq lsp-ui-doc-enable nil))
+  :config
+;  (setq haskell-process-type 'ghci)
+;  (setq haskell-process-path-ghci (executable-find "stack"))
+;  (setq haskell-process-args-ghci '("ghci"))
+;  (setq inferior-haskell-root-dir "/tmp")
+)
+;(use-package lsp-haskell
+;  :config
+;  (setq lsp-haskell-process-path-hie (executable-find "ghcide"))
+;  (setq lsp-haskell-process-args-hie '())
+;  (setq lsp-log-io nil))
+#+END_SRC

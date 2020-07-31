@@ -1,0 +1,1 @@
+set -gx PATH $PATH $HOME/bin $HOME/.cargo/bin $NPM_PACKAGES/bin $HOME/.local/bin

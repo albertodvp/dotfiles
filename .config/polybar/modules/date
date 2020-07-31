@@ -13,5 +13,3 @@ format-prefix-foreground = ${colors.my_foreground}
 format-underline = ${colors.my_color5}
 
 label = %date% %time%
-
-; vim:ft=dosini

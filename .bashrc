@@ -1,6 +1,7 @@
 alias ls='ls --color=auto'
 
-export PATH=$PATH:$HOME/bin:$HOME/.cargo/bin:$NPM_PACKAGES/bin
+export PATH=$PATH:$HOME/bin:$HOME/.cargo/bin:$NPM_PACKAGES/bin:$HOME/.local/bin
+
 
 # python
 alias py=python
@@ -27,3 +28,15 @@ alias nv=nvim
 # vim
 export VIM_SESSION=~/.vim/sessions
 
+
+#anaconda
+
+alias conda-activate='source /opt/anaconda/bin/activate'
+
+
+#emacs
+alias enw='emacs -nw'
+
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

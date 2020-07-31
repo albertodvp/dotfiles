@@ -1,0 +1,4 @@
+* Dotfiles
+TODOs:
+- [X] Initial config
+- [ ] Finish set-up of Haskel env
