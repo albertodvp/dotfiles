@@ -25,6 +25,8 @@
 		     haskell-mode
 		     ;lsp-haskell
 		     ;lsp-ui
+		     auto-complete
+		     use-package
 		     )
  "Default packages")
 (require 'cl)
