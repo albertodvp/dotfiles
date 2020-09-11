@@ -61,6 +61,7 @@
 #+BEGIN_SRC emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
 (ac-config-default)
+(global-display-line-numbers-mode)
 #+END_SRC
 ** Magit
 #+BEGIN_SRC emacs-lisp
@@ -78,6 +79,14 @@ Journal
                               ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
                                (file "/home/alberto/Documents/journal/templates/daily-template-evening.org"))))
 
+(defun org-journal-find-location ()
+  ;; Open today's journal, but specify a non-nil prefix argument in order to
+  ;; inhibit inserting the heading; org-capture will insert the heading.
+  (org-journal-new-entry t)
+  ;; Position point on the journal's top-level heading so that org-capture
+  ;; will add the new entry as a child entry.
+  (goto-char (point-min)))
+
 #+END_SRC
 ** Python
 #+BEGIN_SRC emacs-lisp
@@ -93,7 +102,7 @@ Journal
  (lambda ()
   (add-hook 'before-save-hook 'pyimport-remove-unused t t)
   (add-hook 'before-save-hook 'py-isort-buffer t t)
-  (add-hook 'before-save-hook 'py-autopep8-buffer t t)
+;  (add-hook 'before-save-hook 'py-autopep8-buffer t t)
   (add-hook 'before-save-hook 'blacken-buffer t t)))
 
 #+END_SRC
@@ -123,4 +132,10 @@ Journal
 ;  (setq lsp-haskell-process-path-hie (executable-find "ghcide"))
 ;  (setq lsp-haskell-process-args-hie '())
 ;  (setq lsp-log-io nil))
+#+END_SRC
+
+** C
+#+BEGIN_SRC emacs-lisp
+(require 'ccls)
+(setq ccls-executable "/usr/bin/ccls")
 #+END_SRC
