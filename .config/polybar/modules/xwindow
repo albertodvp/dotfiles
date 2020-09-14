@@ -1,6 +1,0 @@
-[module/xwindow]
-type = internal/xwindow
-label = %title:0:30:...%
-label-padding = 10
-label-foreground = ${colors.my_color4}
-

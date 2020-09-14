@@ -12,6 +12,7 @@
                      flycheck
                      py-autopep8
                      blacken
+		     ccls
                      flycheck
                      pyimport
                      py-isort
