@@ -28,6 +28,7 @@
 		     ;lsp-ui
 		     auto-complete
 		     use-package
+		     darktooth-theme
 		     )
  "Default packages")
 (require 'cl)
@@ -52,11 +53,12 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+(set-frame-font "Hasklig 18" nil t)
 #+END_SRC
 
 ** Theme
 #+BEGIN_SRC emacs-lisp
-(load-theme 'wombat t)
+(load-theme 'darktooth t)
 #+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
