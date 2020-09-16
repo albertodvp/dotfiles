@@ -13,6 +13,8 @@
                      py-autopep8
                      blacken
 		     ccls
+		     dockerfile-mode
+		     docker-compose-mode
                      flycheck
                      pyimport
                      py-isort
@@ -54,6 +56,8 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (set-frame-font "Hasklig 18" nil t)
+(setq-default indent-tabs-mode nil)
+
 #+END_SRC
 
 ** Theme
