@@ -57,7 +57,7 @@
 (menu-bar-mode -1)
 (set-frame-font "Hasklig 18" nil t)
 (setq-default indent-tabs-mode nil)
-
+(setq split-width-threshold 1)
 #+END_SRC
 
 ** Theme
@@ -109,7 +109,7 @@ Journal
  (lambda ()
   (add-hook 'before-save-hook 'pyimport-remove-unused t t)
   (add-hook 'before-save-hook 'py-isort-buffer t t)
-;  (add-hook 'before-save-hook 'py-autopep8-buffer t t)
+  (add-hook 'before-save-hook 'py-autopep8-buffer t t)
   (add-hook 'before-save-hook 'blacken-buffer t t)))
 
 #+END_SRC

@@ -57,7 +57,7 @@
  '(main-line-color2 "#111111")
  '(main-line-separator-style 'chamfer)
  '(package-selected-packages
-   '(darktooth-theme seoul256-theme subatomic256-theme subatomic-theme modus-operandi-theme modus-vivendi-theme nord-theme soothe-theme ccls vue-mode use-package try transpose-frame toml-mode toml telega sublime-themes stack-mode spacemacs-theme realgud-ipdb python-pytest pytest pylint pyimpsort pyimport pyenv-mode py-isort py-autopep8 plantuml-mode pdf-tools pdb-mode org-kanban org-journal org-capture-pop-frame ob-ipython material-theme magit lsp-haskell jupyter js-format js-auto-format-mode jedi isortify htmlize flymake-python-pyflakes eslint-fix elpy ein dockerfile-mode docker-compose-mode dante blacken auctex-latexmk))
+   '(importmagic darktooth-theme seoul256-theme subatomic256-theme subatomic-theme modus-operandi-theme modus-vivendi-theme nord-theme soothe-theme ccls vue-mode use-package try transpose-frame toml-mode toml telega sublime-themes stack-mode spacemacs-theme realgud-ipdb python-pytest pytest pylint pyimpsort pyimport pyenv-mode py-isort py-autopep8 plantuml-mode pdf-tools pdb-mode org-kanban org-journal org-capture-pop-frame ob-ipython material-theme magit lsp-haskell jupyter js-format js-auto-format-mode jedi isortify htmlize flymake-python-pyflakes eslint-fix elpy ein dockerfile-mode docker-compose-mode dante blacken auctex-latexmk))
  '(powerline-color1 "#1E1E1E")
  '(powerline-color2 "#111111")
  '(vc-annotate-background nil)
