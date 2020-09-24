@@ -18,7 +18,7 @@
     s = switch
 
 [core]
-    editor = emacsclient -t
+    editor = emacsclient -t -nw
 [includeIf "gitdir/i:~/Work/"]
     path = ~/Work/gitconfig_work
     
