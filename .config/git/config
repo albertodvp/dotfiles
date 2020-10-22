@@ -8,7 +8,7 @@
     p = push
     bd = branch -d
     bD = branch -D
-
+    acan = "!git add -u && git commit --amend --no-edit"
     st = status -sb
 
     # Complex aliases
