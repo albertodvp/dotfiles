@@ -28,6 +28,7 @@
 		     haskell-mode
 		     ;lsp-haskell
 		     ;lsp-ui
+                     lsp-java
 		     auto-complete
 		     use-package
 		     darktooth-theme
@@ -145,4 +146,9 @@ Journal
 #+BEGIN_SRC emacs-lisp
 (require 'ccls)
 (setq ccls-executable "/usr/bin/ccls")
+#+END_SRC
+** Java
+#+BEGIN_SRC emacs-lisp
+(require 'lsp-java)
+(add-hook 'java-mode-hook #'lsp)
 #+END_SRC

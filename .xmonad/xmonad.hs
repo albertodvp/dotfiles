@@ -10,6 +10,7 @@
 import XMonad
 import Data.Monoid
 import System.Exit
+import XMonad.Actions.UpdatePointer
 import XMonad.Hooks.ManageDocks
 import XMonad.Util.SpawnOnce
 import XMonad.Util.Run
@@ -233,6 +234,7 @@ myEventHook = mempty
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
 myLogHook = do
+  updatePointer (0.5, 0.5) (0, 0)
   spawnOnce "nitrogen --restore"
   spawnOnce "picom -b"
 
