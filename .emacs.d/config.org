@@ -98,20 +98,22 @@ Journal
 #+END_SRC
 ** Python
 #+BEGIN_SRC emacs-lisp
-(elpy-enable)
+  (elpy-enable)
 
-(when(require 'flycheck nil t)
- (setq elpy-modules(delq 'elpy-module-flymake elpy-modules))
- (add-hook 'elpy-mode-hook 'flycheck-mode))
+  (when(require 'flycheck nil t)
+   (setq elpy-modules(delq 'elpy-module-flymake elpy-modules))
+   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
-(require 'py-autopep8)
+  (require 'py-autopep8)
 
-(add-hook 'elpy-mode-hook
- (lambda ()
-  (add-hook 'before-save-hook 'pyimport-remove-unused t t)
-  (add-hook 'before-save-hook 'py-isort-buffer t t)
-  (add-hook 'before-save-hook 'py-autopep8-buffer t t)
-  (add-hook 'before-save-hook 'blacken-buffer t t)))
+  (add-hook 'elpy-mode-hook
+   (lambda ()
+  ;  (add-hook 'before-save-hook 'pyimport-remove-unused t t)
+    (add-hook 'before-save-hook 'py-isort-buffer t t)
+    (add-hook 'before-save-hook 'py-autopep8-buffer t t)
+    (add-hook 'before-save-hook 'blacken-buffer t t)))
+
+  (setq elpy-rpc-virtualenv-path 'current)
 
 #+END_SRC
 
