@@ -7,16 +7,16 @@
 -- Normally, you'd only override those defaults you care about.
 --
 
-import XMonad
-import Data.Monoid
-import System.Exit
-import XMonad.Actions.UpdatePointer
-import XMonad.Hooks.ManageDocks
-import XMonad.Util.SpawnOnce
-import XMonad.Util.Run
+import qualified Data.Map as M
+import           Data.Monoid
+import           System.Exit
+import           XMonad
+import           XMonad.Actions.UpdatePointer
+import           XMonad.Hooks.EwmhDesktops
+import           XMonad.Hooks.ManageDocks
 import qualified XMonad.StackSet as W
-import qualified Data.Map        as M
-
+import           XMonad.Util.Run
+import           XMonad.Util.SpawnOnce
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
@@ -225,7 +225,7 @@ myManageHook = composeAll
 -- return (All True) if the default handler is to be run afterwards. To
 -- combine event hooks use mappend or mconcat from Data.Monoid.
 --
-myEventHook = mempty
+myEventHook = fullscreenEventHook
 
 ------------------------------------------------------------------------
 -- Status bars and logging

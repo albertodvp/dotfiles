@@ -2,98 +2,121 @@
 
 ** User details
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Alberto Fanton")
-(setq user-mail-address "alberto.fanton@protonmail.com")
+  (setq user-full-name "Alberto Fanton")
+  (setq user-mail-address "alberto.fanton@protonmail.com")
 #+END_SRC
 
 ** Packages
 #+BEGIN_SRC emacs-lisp
-(defvar myPackages '(elpy
-                     flycheck
-                     py-autopep8
-                     blacken
-		     ccls
-		     dockerfile-mode
-		     docker-compose-mode
-                     flycheck
-                     pyimport
-                     py-isort
-                     magit
-                     markdown-mode
-                     org
-                     org-journal
-                     transpose-frame
-                     toml-mode
-                     yaml-mode
-		     haskell-mode
-		     lsp-mode
-		     ;lsp-ui
-                     lsp-java
-		     auto-complete
-		     use-package
-		     darktooth-theme
-		     )
- "Default packages")
-(require 'cl)
-(defun myPackages-installed-p()
- (loop for pkg in myPackages
-  when(not (package-installed-p pkg)) do(return nil)
-  finally (return t)))
+  (defvar myPackages '(elpy
+                       flycheck
+                       py-autopep8
+                       blacken
+                       ccls
+                       dockerfile-mode
+                       company
+                       docker-compose-mode
+                       pyimport
+                       py-isort
+                       magit
+                       markdown-mode
+                       org
+                       org-journal
+                       transpose-frame
+                       toml-mode
+                       yaml-mode
+                       haskell-mode
+                       flycheck-haskell
+                       hindent
+                       lsp-mode
+                       projectile
+                       lsp-java
+                       lsp-ui
+                       use-package
+                       darktooth-theme
+                       which-key
+                       )
+   "Default packages")
+  (require 'cl)
+  (defun myPackages-installed-p()
+   (loop for pkg in myPackages
+    when(not (package-installed-p pkg)) do(return nil)
+    finally (return t)))
 
-(unless(myPackages-installed-p)
- (message "%s" "Refreshing package database...")
- (package-refresh-contents)
- (dolist(pkg myPackages)
-    (when(not (package-installed-p pkg))
-     (package-install pkg))))
+  (unless(myPackages-installed-p)
+   (message "%s" "Refreshing package database...")
+   (package-refresh-contents)
+   (dolist(pkg myPackages)
+      (when(not (package-installed-p pkg))
+       (package-install pkg))))
 #+END_SRC
 
 ** Setup
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-splash-screen t
- initial-scratch-message nil
- initial-major-mode 'org-mode)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(set-frame-font "Hasklig 18" nil t)
-(setq-default indent-tabs-mode nil)
-(setq split-width-threshold 1)
+    (setq inhibit-splash-screen t
+     initial-scratch-message nil
+     initial-major-mode 'org-mode)
+    (scroll-bar-mode -1)
+    (tool-bar-mode -1)
+    (menu-bar-mode -1)
+    (set-frame-font "Hasklig 18" nil t)
+    (setq-default indent-tabs-mode nil)
+    (setq split-width-threshold 1)
+
+
+    (add-hook 'after-init-hook 'global-company-mode)
+
+    (require 'ansi-color)
+    (defun colorize-compilation-buffer ()
+      (toggle-read-only)
+      (ansi-color-apply-on-region compilation-filter-start (point))
+      (toggle-read-only))
+    (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
+
+  (require 'which-key)
+  (which-key-mode)
+  (which-key-setup-minibuffer)
+
+
 #+END_SRC
 
 ** Theme
 #+BEGIN_SRC emacs-lisp
-(load-theme 'darktooth t)
+  (load-theme 'darktooth t)
 #+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
-(defalias 'yes-or-no-p 'y-or-n-p)
-(ac-config-default)
-(global-display-line-numbers-mode)
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (global-display-line-numbers-mode)
 #+END_SRC
 ** Magit
 #+BEGIN_SRC emacs-lisp
-(global-set-key(kbd "C-x g") 'magit-status)
+  (global-set-key(kbd "C-x g") 'magit-status)
 #+END_SRC
 ** ORG
 Journal
 #+BEGIN_SRC emacs-lisp
-(global-set-key(kbd "C-c e") 'org-journal-new-entry)
-(global-set-key(kbd "C-c c") 'org-capture)
+  (global-set-key(kbd "C-c e") 'org-journal-new-entry)
+  (global-set-key(kbd "C-c c") 'org-capture)
 
-(setq org-capture-templates '(("j" "Journal prompts")
-                              ("jm" "Morning journal prompts entry" entry(function org-journal-find-location)
-                               (file "/home/alberto/Documents/journal/templates/daily-template-morning.org"))
-                              ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
-                               (file "/home/alberto/Documents/journal/templates/daily-template-evening.org"))))
+  (setq org-capture-templates '(("j" "Journal prompts")
+                                ("jm" "Morning journal prompts entry" entry(function org-journal-find-location)
+                                 (file "/home/alberto/Documents/journal/templates/daily-template-morning.org"))
+                                ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
+                                 (file "/home/alberto/Documents/journal/templates/daily-template-evening.org"))))
 
-(defun org-journal-find-location ()
-  ;; Open today's journal, but specify a non-nil prefix argument in order to
-  ;; inhibit inserting the heading; org-capture will insert the heading.
-  (org-journal-new-entry t)
-  ;; Position point on the journal's top-level heading so that org-capture
-  ;; will add the new entry as a child entry.
-  (goto-char (point-min)))
+  (defun org-journal-find-location ()
+    ;; Open today's journal, but specify a non-nil prefix argument in order to
+    ;; inhibit inserting the heading; org-capture will insert the heading.
+    (org-journal-new-entry t)
+    ;; Position point on the journal's top-level heading so that org-capture
+    ;; will add the new entry as a child entry.
+    (goto-char (point-min)))
 
 #+END_SRC
 ** Python
@@ -108,27 +131,76 @@ Journal
 
   (add-hook 'elpy-mode-hook
    (lambda ()
-  ;  (add-hook 'before-save-hook 'pyimport-remove-unused t t)
+  ;;  (add-hook 'before-save-hook 'pyimport-remove-unused t t)
     (add-hook 'before-save-hook 'py-isort-buffer t t)
     (add-hook 'before-save-hook 'py-autopep8-buffer t t)
     (add-hook 'before-save-hook 'blacken-buffer t t)))
 
   (setq elpy-rpc-virtualenv-path 'current)
 
+
 #+END_SRC
 
 ** Haskell
 #+BEGIN_SRC emacs-lisp
+  (require 'haskell-mode)
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+  (require 'haskell-cabal)
+  (require 'hindent)
+  ;; needed packages: stylish-haskell, hlint, hindent
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
+  (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
+
+  (define-key haskell-mode-map (kbd "C-c C-o") 'haskell-compile)
+  (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
+  (define-key haskell-mode-map (kbd "<f9>") 'haskell-mode-format-imports)
+  (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
+  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+  (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
+  (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+  (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+  (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
+  (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
+
+  (define-key haskell-cabal-mode-map (kbd "C-c C-o") 'haskell-compile)
+  (define-key haskell-cabal-mode-map (kbd "C-`") 'haskell-interactive-bring)
+  (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
+  (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)
+
+  (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def)
+
+
+  (custom-set-variables
+   '(haskell-compile-cabal-build-command "stack build")
+   '(haskell-check-command "hlint")
+   '(flycheck-disabled-checkers '(haskell-stack-ghc))
+   '(haskell-process-suggest-remove-import-lines t)
+   '(haskell-process-auto-import-loaded-modules t)
+   '(haskell-process-type 'stack-ghci)
+   '(haskell-stylish-on-save t)
+   '(haskell-process-log t))
+
 
 #+END_SRC
 
-** C
-#+BEGIN_SRC emacs-lisp
-(require 'ccls)
-(setq ccls-executable "/usr/bin/ccls")
-#+END_SRC
 ** Java
 #+BEGIN_SRC emacs-lisp
-(require 'lsp-java)
-(add-hook 'java-mode-hook #'lsp)
+  (require 'lsp-java)
+  (add-hook 'java-mode-hook #'lsp)
+
+
+  (add-hook 'java-mode-hook (defun my-set-java-tab-width () (setq tab-width 2)))
+  (setq lsp-java-format-settings-url "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml")
+  (setq lsp-java-format-settings-profile "GoogleStyle")
+
 #+END_SRC
+
+** Projectile
+#+BEGIN_SRC emacs-lisp
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+END_SRC
+
