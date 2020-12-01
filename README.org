@@ -1,7 +1,2 @@
 * Dotfiles
-TODOs:
-- [X] Initial config
-- [ ] Add st config
-- [ ] Emacs theme
-- [ ] Add system.org
-- [ ] Finish set-up of Haskel env
+My dotfiles

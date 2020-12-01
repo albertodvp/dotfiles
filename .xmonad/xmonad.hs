@@ -7,14 +7,15 @@
 -- Normally, you'd only override those defaults you care about.
 --
 
-import qualified Data.Map as M
+import qualified Data.Map                     as M
 import           Data.Monoid
 import           System.Exit
 import           XMonad
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.ManageDocks
-import qualified XMonad.StackSet as W
+import           XMonad.Layout.Spacing
+import qualified XMonad.StackSet              as W
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
 -- The preferred terminal program, which is used in a binding below and by
@@ -66,10 +67,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "dmenu_run")
-
-    -- launch gmrun
-    , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")
+    , ((modm,               xK_p     ), spawn "rofi -show run")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
@@ -181,7 +179,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 -- The available layouts.  Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
-myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
+myLayout = avoidStruts (borders (tiled ||| Mirror tiled ||| Full))
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -194,6 +192,9 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
 
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
+
+     -- Screen and window borders
+     borders = spacingRaw False (Border 0 10 10 10) True (Border 10 10 10 10) True
 
 ------------------------------------------------------------------------
 -- Window rules:
@@ -235,6 +236,7 @@ myEventHook = fullscreenEventHook
 --
 myLogHook = do
   updatePointer (0.5, 0.5) (0, 0)
+  spawnOnce "sh /usr/bin/screenlayout.sh"
   spawnOnce "nitrogen --restore"
   spawnOnce "picom -b"
 
@@ -254,8 +256,8 @@ myStartupHook = return ()
 -- Run xmonad with the settings you specify. No need to modify this.
 --
 main = do
-  xmproc0 <- spawnPipe "xmobar -x 0 /home/alberto/.config/xmobar/xmobarrc"
-  xmproc1 <- spawnPipe "xmobar -x 1 /home/alberto/.config/xmobar/xmobarrc"
+  _ <- spawnPipe "xmobar -x 0 /home/alberto/.config/xmobar/xmobarrc"
+  _ <- spawnPipe "xmobar -x 1 /home/alberto/.config/xmobar/xmobarrc"
   xmonad $ docks defaults
 
 -- A structure containing your configuration settings, overriding

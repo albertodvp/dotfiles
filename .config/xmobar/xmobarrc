@@ -2,8 +2,8 @@ Config { font = "xft:Hack:pixelsize=16:antialias=true:autohint=true"
        , additionalFonts = []
        , borderColor = "black"
        , border = TopB
-       , bgColor = "black"
-       , fgColor = "grey"
+       , bgColor = "#2E3440"
+       , fgColor = "#D8DEE9"
        , alpha = 255
        , position = Top
        , textOffset = -1

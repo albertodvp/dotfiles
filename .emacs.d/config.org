@@ -35,6 +35,9 @@
                        use-package
                        darktooth-theme
                        which-key
+                       realgud
+                       subatomic256-theme
+                       git-gutter
                        )
    "Default packages")
   (require 'cl)
@@ -53,7 +56,9 @@
 
 ** Setup
 #+BEGIN_SRC emacs-lisp
-    (setq inhibit-splash-screen t
+    (setq
+     frame-resize-pixelwise t
+     inhibit-splash-screen t
      initial-scratch-message nil
      initial-major-mode 'org-mode)
     (scroll-bar-mode -1)
@@ -62,6 +67,8 @@
     (set-frame-font "Hasklig 18" nil t)
     (setq-default indent-tabs-mode nil)
     (setq split-width-threshold 1)
+  (custom-set-variables
+   '(initial-frame-alist (quote ((fullscreen . maximized)))))
 
 
     (add-hook 'after-init-hook 'global-company-mode)
@@ -82,33 +89,64 @@
   (which-key-mode)
   (which-key-setup-minibuffer)
 
-
 #+END_SRC
 
-** Theme
+
+** Theme   
 #+BEGIN_SRC emacs-lisp
-  (load-theme 'darktooth t)
+  (load-theme 'subatomic256 t)
 #+END_SRC
+
+
 ** Misc
+   
 #+BEGIN_SRC emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
   (global-display-line-numbers-mode)
 #+END_SRC
+
 ** Magit
 #+BEGIN_SRC emacs-lisp
   (global-set-key(kbd "C-x g") 'magit-status)
 #+END_SRC
+
 ** ORG
-Journal
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages 'org-babel-load-languages
+      '(
+          (shell . t)
+          (haskell . t)
+      )
+  )
+#+END_SRC
+
+
+*** Journal
 #+BEGIN_SRC emacs-lisp
   (global-set-key(kbd "C-c e") 'org-journal-new-entry)
   (global-set-key(kbd "C-c c") 'org-capture)
+  (global-set-key(kbd "C-c w") 'org-workout)
 
-  (setq org-capture-templates '(("j" "Journal prompts")
-                                ("jm" "Morning journal prompts entry" entry(function org-journal-find-location)
-                                 (file "/home/alberto/Documents/journal/templates/daily-template-morning.org"))
-                                ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
-                                 (file "/home/alberto/Documents/journal/templates/daily-template-evening.org"))))
+  (use-package org-journal
+  :ensure t
+  :defer t
+  :init
+  ;; Change default prefix key; needs to be set before loading org-journal
+  (setq org-journal-prefix-key "C-c j")
+  :config
+  (setq org-journal-dir "~/Documents/journal/"
+        org-journal-date-format "%A, %d %B %Y"))
+
+  ;; TODO
+  ;; (defun org-journal-workout ()
+  ;;   (setq-local org-journal-dir "~/Documents/journal/workout")
+  ;;   (org-journal-find-location)
+  ;;   )
+  ;; (defun org-journal-journal ()
+  ;;   (setq-local org-journal-dir "~/Documents/journal/journal")
+  ;;   (org-journal-find-location)
+  ;;   )
+
 
   (defun org-journal-find-location ()
     ;; Open today's journal, but specify a non-nil prefix argument in order to
@@ -119,6 +157,19 @@ Journal
     (goto-char (point-min)))
 
 #+END_SRC
+
+
+*** Capture
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates '(("j" "Journal prompts")
+                                ("jm" "Morning journal prompts entry" entry(function org-journal-find-location)
+                                 (file "~/Documents/journal/templates/daily-template-morning.org"))
+                                ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
+                                 (file "~/Documents/journal/templates/daily-template-evening.org"))))
+
+#+END_SRC
+
+
 ** Python
 #+BEGIN_SRC emacs-lisp
   (elpy-enable)
@@ -137,9 +188,10 @@ Journal
     (add-hook 'before-save-hook 'blacken-buffer t t)))
 
   (setq elpy-rpc-virtualenv-path 'current)
-
+  (setq elpy-test-runner "py.test")
 
 #+END_SRC
+
 
 ** Haskell
 #+BEGIN_SRC emacs-lisp
@@ -197,10 +249,50 @@ Journal
 
 #+END_SRC
 
+** LSP
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :commands lsp
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+  :hook (lsp-mode . lsp-enable-which-key-integration))
+#+END_SRC
+
+** Readlgud
+#+BEGIN_SRC emacs-lisp
+  (require 'realgud)
+  (setq realgud:pdb-command-name "python")
+#+END_SRC
+
 ** Projectile
 #+BEGIN_SRC emacs-lisp
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+END_SRC
+
+** Git gutter
+#+BEGIN_SRC emacs-lisp
+  (require 'git-gutter)
+
+  (global-git-gutter-mode t)
+
+  (global-set-key (kbd "C-x C-g") 'git-gutter)
+  (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+
+  ;; Jump to next/previous hunk
+  (global-set-key (kbd "C-x p") 'git-gutter:previous-hunk)
+  (global-set-key (kbd "C-x n") 'git-gutter:next-hunk)
+
+  ;; Stage current hunk
+  (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+
+  ;; Revert current hunk
+  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+
+  ;; Mark current hunk
+  (global-set-key (kbd "C-x v SPC") #'git-gutter:mark-hunk)
 #+END_SRC
 
