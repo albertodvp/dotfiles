@@ -1,4 +1,4 @@
-* Emacs configuation
+M* Emacs configuation
 
 ** User details
 #+BEGIN_SRC emacs-lisp
@@ -16,12 +16,16 @@
                        dockerfile-mode
                        company
                        docker-compose-mode
+                       emojify
+                       emoji-cheat-sheet-plus
+                       rainbow-mode
                        pyimport
                        py-isort
                        magit
                        markdown-mode
                        org
                        org-journal
+                       ob-async
                        transpose-frame
                        toml-mode
                        yaml-mode
@@ -31,6 +35,9 @@
                        lsp-mode
                        projectile
                        lsp-java
+                       lsp-haskell
+                       nyan-mode
+                       hasklig-mode
                        lsp-ui
                        use-package
                        darktooth-theme
@@ -38,6 +45,7 @@
                        realgud
                        subatomic256-theme
                        git-gutter
+                       emoji-cheat-sheet-plus
                        )
    "Default packages")
   (require 'cl)
@@ -56,29 +64,28 @@
 
 ** Setup
 #+BEGIN_SRC emacs-lisp
-    (setq
-     frame-resize-pixelwise t
-     inhibit-splash-screen t
-     initial-scratch-message nil
-     initial-major-mode 'org-mode)
-    (scroll-bar-mode -1)
-    (tool-bar-mode -1)
-    (menu-bar-mode -1)
-    (set-frame-font "Hasklig 18" nil t)
-    (setq-default indent-tabs-mode nil)
-    (setq split-width-threshold 1)
+  (setq
+   frame-resize-pixelwise t
+   inhibit-splash-screen t
+   initial-scratch-message nil
+   initial-major-mode 'org-mode)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (set-frame-font "Hasklig 16" nil t)
+  (setq-default indent-tabs-mode nil)
+  (setq split-width-threshold 1)
   (custom-set-variables
    '(initial-frame-alist (quote ((fullscreen . maximized)))))
 
-
-    (add-hook 'after-init-hook 'global-company-mode)
-
-    (require 'ansi-color)
-    (defun colorize-compilation-buffer ()
-      (toggle-read-only)
-      (ansi-color-apply-on-region compilation-filter-start (point))
-      (toggle-read-only))
-    (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  (require 'use-package)
+  (add-hook 'after-init-hook 'global-company-mode)
+  (require 'ansi-color)
+  (defun colorize-compilation-buffer ()
+    (toggle-read-only)
+    (ansi-color-apply-on-region compilation-filter-start (point))
+    (toggle-read-only))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 
   (use-package flycheck
@@ -89,7 +96,30 @@
   (which-key-mode)
   (which-key-setup-minibuffer)
 
+  (use-package emoji-cheat-sheet-plus
+        :defer t
+        :init
+        (progn
+          ;; enabled emoji in buffer
+          (add-hook 'org-mode-hook 'emoji-cheat-sheet-plus-display-mode)
+          ;; insert emoji with helm
+          (global-set-key (kbd "C-c M-e") 'emoji-cheat-sheet-plus-insert)))
+
+
+  (use-package emojify
+        :hook (after-init . global-emojify-mode))
+
+
+
+  (define-globalized-minor-mode my-global-hasklig-mode hasklig-mode
+    (lambda () (hasklig-mode 1)))
+
+  (my-global-hasklig-mode 1)
+
+  (require 'nyan-mode)
+  (nyan-mode)
 #+END_SRC
+
 
 
 ** Theme   
@@ -112,6 +142,8 @@
 
 ** ORG
 #+BEGIN_SRC emacs-lisp
+  (require 'ob-async)
+
   (org-babel-do-load-languages 'org-babel-load-languages
       '(
           (shell . t)
@@ -190,8 +222,9 @@
   (setq elpy-rpc-virtualenv-path 'current)
   (setq elpy-test-runner "py.test")
 
-#+END_SRC
+  (defalias 'workon 'pyvenv-workon)
 
+#+END_SRC
 
 ** Haskell
 #+BEGIN_SRC emacs-lisp
@@ -234,6 +267,10 @@
    '(haskell-stylish-on-save t)
    '(haskell-process-log t))
 
+  (require 'lsp)
+  (require 'lsp-haskell)
+  ;; Hooks so haskell and literate haskell major modes trigger LSP setup
+  (add-hook 'haskell-mode-hook #'lsp)
 
 #+END_SRC
 
@@ -295,4 +332,28 @@
   ;; Mark current hunk
   (global-set-key (kbd "C-x v SPC") #'git-gutter:mark-hunk)
 #+END_SRC
+
+** Ligatures
+#+BEGIN_SRC emacs-lisp
+  (use-package ligature
+    :load-path "~/.emacs.d/ligature.el"
+    :config
+    (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                         ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                         "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                         "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                         "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                         "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                         "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                         "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                         ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                         "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                         "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                         "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                         "\\" "://"))
+    ;; Enables ligature checks globally in all buffers. You can also do it
+    ;; per mode with `ligature-mode'.
+    (global-ligature-mode t))
+#+END_SRC
+
 
