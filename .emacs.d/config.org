@@ -1,4 +1,4 @@
-M* Emacs configuation
+* Emacs configuation
 
 ** User details
 #+BEGIN_SRC emacs-lisp
@@ -226,6 +226,8 @@ M* Emacs configuation
   (defalias 'workon 'pyvenv-workon)
 
 #+END_SRC
+
+
 
 ** Haskell
 #+BEGIN_SRC emacs-lisp

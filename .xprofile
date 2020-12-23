@@ -1,3 +1,5 @@
+#~/bin/bash
+
 export PATH=$PATH:$HOME/bin:$HOME/.cargo/bin:$NPM_PACKAGES/bin:$HOME/.local/bin:$HOME/.cabal/bin:$HOME/.ghcup/bin
 
 export GHCUP_INSTALL_BASE_PREFIX=$HOME
@@ -5,6 +7,4 @@ export GHCUP_INSTALL_BASE_PREFIX=$HOME
 export XDG_DATA_HOME=$HOME/data
 
 export WORKON_HOME=$XDG_DATA_HOME/virtualenvs
-
-
 
