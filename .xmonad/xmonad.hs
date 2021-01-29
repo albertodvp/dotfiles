@@ -62,10 +62,12 @@ myFocusedBorderColor = "#ff0000"
 -- Key bindings. Add, modify or remove key bindings here.
 --
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
-
     -- launch a terminal
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
+    -- change key layout
+    , ((modm              , xK_Escape     ), spawn "/home/alberto/bin/layout_switch.sh")
+    
     -- launch dmenu
     , ((modm,               xK_p     ), spawn "rofi -show run")
 
@@ -239,6 +241,7 @@ myLogHook = do
   spawnOnce "sh /usr/bin/screenlayout.sh"
   spawnOnce "nitrogen --restore"
   spawnOnce "picom -b"
+  
 
 ------------------------------------------------------------------------
 -- Startup hook

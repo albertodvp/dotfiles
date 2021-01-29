@@ -16,15 +16,13 @@
                        dockerfile-mode
                        company
                        docker-compose-mode
-                       emojify
-                       emoji-cheat-sheet-plus
-                       rainbow-mode
                        pyimport
                        py-isort
                        magit
                        markdown-mode
                        org
                        org-journal
+                       org-bullets
                        ob-async
                        transpose-frame
                        toml-mode
@@ -36,7 +34,6 @@
                        projectile
                        lsp-java
                        lsp-haskell
-                       nyan-mode
                        hasklig-mode
                        lsp-ui
                        use-package
@@ -45,7 +42,8 @@
                        realgud
                        subatomic256-theme
                        git-gutter
-                       emoji-cheat-sheet-plus
+                       treemacs
+                       treemacs-projectile
                        )
    "Default packages")
   (require 'cl)
@@ -96,38 +94,18 @@
   (which-key-mode)
   (which-key-setup-minibuffer)
 
-  (use-package emoji-cheat-sheet-plus
-        :defer t
-        :init
-        (progn
-          ;; enabled emoji in buffer
-          (add-hook 'org-mode-hook 'emoji-cheat-sheet-plus-display-mode)
-          ;; insert emoji with helm
-          (global-set-key (kbd "C-c M-e") 'emoji-cheat-sheet-plus-insert)))
-
-
-  (use-package emojify
-        :hook (after-init . global-emojify-mode))
-
-
-
   (define-globalized-minor-mode my-global-hasklig-mode hasklig-mode
     (lambda () (hasklig-mode 1)))
 
   (my-global-hasklig-mode 1)
 
-  (require 'nyan-mode)
-  (nyan-mode)
-
   (set-face-attribute 'mode-line nil  :height 100)
 #+END_SRC
-
 
 ** Theme   
 #+BEGIN_SRC emacs-lisp
   (load-theme 'subatomic256 t)
 #+END_SRC
-
 
 ** Misc
    
@@ -151,6 +129,9 @@
           (haskell . t)
       )
   )
+
+  (require 'org-bullets)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+END_SRC
 
 
@@ -202,7 +183,6 @@
 
 #+END_SRC
 
-
 ** Python
 #+BEGIN_SRC emacs-lisp
   (elpy-enable)
@@ -221,13 +201,15 @@
     (add-hook 'before-save-hook 'blacken-buffer t t)))
 
   (setq elpy-rpc-virtualenv-path 'current)
-  (setq elpy-test-runner "py.test")
+  (setq elpy-test-runner 'elpy-test-pytest-runner)
 
   (defalias 'workon 'pyvenv-workon)
 
+  (use-package lsp-mode
+  :hook
+  ((python-mode . lsp)))
+
 #+END_SRC
-
-
 
 ** Haskell
 #+BEGIN_SRC emacs-lisp
@@ -275,6 +257,7 @@
   ;; Hooks so haskell and literate haskell major modes trigger LSP setup
   (add-hook 'haskell-mode-hook #'lsp)
 
+
 #+END_SRC
 
 ** Java
@@ -298,6 +281,13 @@
   :config
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   :hook (lsp-mode . lsp-enable-which-key-integration))
+
+(use-package lsp-ui
+  :init
+  (setq lsp-ui-doc-position 'at-point)
+  )
+
+
 #+END_SRC
 
 ** Readlgud
@@ -311,6 +301,9 @@
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+  (setq projectile-project-search-path '("~/Projects/" "~/Work/" "~/Learning"))
+
 #+END_SRC
 
 ** Git gutter
@@ -336,27 +329,17 @@
   (global-set-key (kbd "C-x v SPC") #'git-gutter:mark-hunk)
 #+END_SRC
 
-** Ligatures
+
+
+** Treemacs
 #+BEGIN_SRC emacs-lisp
-  (use-package ligature
-    :load-path "~/.emacs.d/ligature.el"
-    :config
-    (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                         ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                         "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                         "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                         "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                         "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                         "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                         "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                         ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                         "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                         "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                         "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                         "\\" "://"))
-    ;; Enables ligature checks globally in all buffers. You can also do it
-    ;; per mode with `ligature-mode'.
-    (global-ligature-mode t))
+(use-package treemacs
+  :ensure t
+  :bind
+  (:map global-map
+    ([f4] . treemacs)
+    ([f5] . treemacs-select-window))
+  :config
+  (set
+  (setq treemacs-is-never-other-window t))
 #+END_SRC
-
-
