@@ -18,6 +18,7 @@
                        docker-compose-mode
                        pyimport
                        py-isort
+                       lsp-python-ms
                        magit
                        markdown-mode
                        org
@@ -43,7 +44,9 @@
                        subatomic256-theme
                        git-gutter
                        treemacs
-                       treemacs-projectile
+                       all-the-icons
+                       doom-modeline
+                       org-roam
                        )
    "Default packages")
   (require 'cl)
@@ -100,6 +103,9 @@
   (my-global-hasklig-mode 1)
 
   (set-face-attribute 'mode-line nil  :height 100)
+
+  (setq smerge-command-prefix "\C-cv")
+
 #+END_SRC
 
 ** Theme   
@@ -132,14 +138,12 @@
 
   (require 'org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+  (global-set-key(kbd "C-c c") 'org-capture)
 #+END_SRC
-
-
 *** Journal
 #+BEGIN_SRC emacs-lisp
   (global-set-key(kbd "C-c e") 'org-journal-new-entry)
-  (global-set-key(kbd "C-c c") 'org-capture)
-  (global-set-key(kbd "C-c w") 'org-workout)
 
   (use-package org-journal
   :ensure t
@@ -148,7 +152,7 @@
   ;; Change default prefix key; needs to be set before loading org-journal
   (setq org-journal-prefix-key "C-c j")
   :config
-  (setq org-journal-dir "~/Documents/journal/"
+  (setq org-journal-dir "~/Documents/org/journal/"
         org-journal-date-format "%A, %d %B %Y"))
 
   ;; TODO
@@ -174,14 +178,46 @@
 
 
 *** Capture
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
+  (global-set-key(kbd "C-c c") 'org-capture)
   (setq org-capture-templates '(("j" "Journal prompts")
                                 ("jm" "Morning journal prompts entry" entry(function org-journal-find-location)
-                                 (file "~/Documents/journal/templates/daily-template-morning.org"))
+                                 (file "~/Documents/org/templates/daily-template-morning.org"))
                                 ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
-                                 (file "~/Documents/journal/templates/daily-template-evening.org"))))
+                                 (file "~/Documents/org/templates/daily-template-evening.org"))
+  ))
+  (setq org-roam-capture-templates '( ("d" "default" plain (function org-roam--capture-get-point)
+     "%?"
+     :file-name "%<%Y%m%d%H%M%S>-${slug}"
+     :head "#+title: ${title}\n"
+     :unnarrowed t)
+    ("b" "book" entry (function org-roam--capture-get-point)
+     (file "~/Documents/org/templates/book.org")
+     :file-name "book/%<%Y%m%d%H%M%S>-${slug}"
+     :head "#+title: ${title}\n#+roam_tags: book\n\n")
+  ))
 
-#+END_SRC
+  
+  #+END_SRC
+
+*** Roam
+  #+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+      :ensure t
+      :init
+      :hook
+      (after-init . org-roam-mode)
+      :custom
+      (org-roam-directory "~/Documents/org/second-brain")
+      :bind (:map org-roam-mode-map
+              (("C-c n l" . org-roam)
+               ("C-c n f" . org-roam-find-file)
+               ("C-c n g" . org-roam-graph)
+               ("C-c n c" . org-roam-capture))
+              :map org-mode-map
+              (("C-c n i" . org-roam-insert))
+              (("C-c n I" . org-roam-insert-immediate))))
+  #+END_SRC
 
 ** Python
 #+BEGIN_SRC emacs-lisp
@@ -205,9 +241,12 @@
 
   (defalias 'workon 'pyvenv-workon)
 
-  (use-package lsp-mode
-  :hook
-  ((python-mode . lsp)))
+  (use-package lsp-python-ms
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-python-ms)
+                          (lsp))))  ; or lsp-deferred
 
 #+END_SRC
 
@@ -218,7 +257,7 @@
   (require 'haskell-process)
   (require 'haskell-cabal)
   (require 'hindent)
-  ;; needed packages: stylish-haskell, hlint, hindent
+  ;; needed packages: stylish-haskell, hlint
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
   (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
@@ -329,7 +368,14 @@
   (global-set-key (kbd "C-x v SPC") #'git-gutter:mark-hunk)
 #+END_SRC
 
+** Modeline
+Remember to call ~M-x all-the-icons-install-fonts~
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
+#+END_SRC
 
 ** Treemacs
 #+BEGIN_SRC emacs-lisp
@@ -340,6 +386,5 @@
     ([f4] . treemacs)
     ([f5] . treemacs-select-window))
   :config
-  (set
   (setq treemacs-is-never-other-window t))
 #+END_SRC
