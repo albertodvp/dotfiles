@@ -18,7 +18,7 @@
     s = switch
 
 [core]
-    editor = emacs -nw
+    editor = vim
     pager = delta
 [includeIf "gitdir/i:~/Work/"]
     path = ~/Work/gitconfig_work
@@ -46,3 +46,6 @@
     commit-decoration-style = bold yellow box ul
     file-style = bold yellow ul
     file-decoration-style = none
+
+[init]
+    defaultBranch = main

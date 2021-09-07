@@ -13,6 +13,7 @@
                        py-autopep8
                        blacken
                        ccls
+                       org-fragtog
                        dockerfile-mode
                        company
                        docker-compose-mode
@@ -25,7 +26,6 @@
                        org-journal
                        org-bullets
                        ob-async
-                       transpose-frame
                        toml-mode
                        yaml-mode
                        haskell-mode
@@ -35,6 +35,8 @@
                        projectile
                        lsp-java
                        lsp-haskell
+                       lsp-treemacs
+                       helm-lsp
                        hasklig-mode
                        lsp-ui
                        use-package
@@ -47,6 +49,9 @@
                        all-the-icons
                        doom-modeline
                        org-roam
+                       hydra
+                       helm-xref
+                       dap-mode
                        )
    "Default packages")
   (require 'cl)
@@ -125,9 +130,12 @@
   (global-set-key(kbd "C-x g") 'magit-status)
 #+END_SRC
 
-** ORG
+** DONE ORG
 #+BEGIN_SRC emacs-lisp
   (require 'ob-async)
+  (add-hook 'org-mode-hook 'org-fragtog-mode)
+
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
 
   (org-babel-do-load-languages 'org-babel-load-languages
       '(
@@ -135,12 +143,14 @@
           (haskell . t)
       )
   )
+  (setq org-image-actual-width nil)
 
   (require 'org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
   (global-set-key(kbd "C-c c") 'org-capture)
 #+END_SRC
+
 *** Journal
 #+BEGIN_SRC emacs-lisp
   (global-set-key(kbd "C-c e") 'org-journal-new-entry)
@@ -388,3 +398,30 @@ Remember to call ~M-x all-the-icons-install-fonts~
   :config
   (setq treemacs-is-never-other-window t))
 #+END_SRC
+** c
+#+BEGIN_SRC emacs-lisp
+
+  ;; sample `helm' configuration use https://github.com/emacs-helm/helm/ for details
+  (helm-mode)
+  (require 'helm-xref)
+  (define-key global-map [remap find-file] #'helm-find-files)
+  (define-key global-map [remap execute-extended-command] #'helm-M-x)
+  (define-key global-map [remap switch-to-buffer] #'helm-mini)
+
+  (which-key-mode)
+  (add-hook 'c-mode-hook 'lsp)
+  (add-hook 'c++-mode-hook 'lsp)
+
+  (setq gc-cons-threshold (* 100 1024 1024)
+        read-process-output-max (* 1024 1024)
+        treemacs-space-between-root-nodes nil
+        company-idle-delay 0.0
+        company-minimum-prefix-length 1
+        lsp-idle-delay 0.1)  ;; clangd is fast
+
+  (with-eval-after-load 'lsp-mode
+    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+    (require 'dap-cpptools)
+    (yas-global-mode))
+#+END_SRC
+

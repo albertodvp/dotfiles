@@ -13,6 +13,15 @@ alias dotfiles '/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias e 'emacsclient -t -nw'
 
 # ghcup-env
-# set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME
-# test -f /home/alberto/.ghcup/env ; and set -gx PATH $HOME/.cabal/bin /home/alberto/.ghcup/bin $PATH
+set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME
+test -f /home/alberto/.ghcup/env ; and set -gx PATH $HOME/.cabal/bin /home/alberto/.ghcup/bin $PATH
 
+# 
+set -Ux PYENV_ROOT $HOME/.pyenv
+set -U fish_user_paths $PYENV_ROOT/bin $fish_user_paths
+
+# Load pyenv automatically by appending
+# the following to ~/.config/fish/config.fish:
+
+status is-interactive; and pyenv init --path | source
+pyenv init - | source

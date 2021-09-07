@@ -21,7 +21,7 @@ import           XMonad.Util.SpawnOnce
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal      = "st"
+myTerminal      = "alacritty"
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -69,7 +69,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm              , xK_Escape     ), spawn "/home/alberto/bin/layout_switch.sh")
     
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "rofi -show run")
+    , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 25' -show-icons")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
