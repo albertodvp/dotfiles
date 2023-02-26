@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 --
 -- xmonad example config file.
 --
@@ -14,10 +15,12 @@ import           XMonad
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.ManageDocks
+import           XMonad.Hooks.ManageHelpers
 import           XMonad.Layout.Spacing
 import qualified XMonad.StackSet              as W
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
+
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
@@ -55,8 +58,8 @@ myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 
 -- Border colors for unfocused and focused windows, respectively.
 --
-myNormalBorderColor  = "#dddddd"
-myFocusedBorderColor = "#ff0000"
+myNormalBorderColor  = "#333333"
+myFocusedBorderColor = "#ffffff"
 
 ------------------------------------------------------------------------
 -- Key bindings. Add, modify or remove key bindings here.
@@ -65,11 +68,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
-    -- change key layout
-    , ((modm              , xK_Escape     ), spawn "/home/alberto/bin/layout_switch.sh")
-    
+    , ((modm .|. shiftMask, xK_v), spawn "vivaldi-stable")
+    , ((modm .|. shiftMask, xK_t), spawn "emacs")
+
+    , ((modm              , xK_Escape), spawn "/home/albertofanton/bin/layout_switch.sh")
+
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 25' -show-icons")
+    , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 30' -show-icons")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
@@ -127,9 +132,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- Restart xmonad
     , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
-
-    -- Run xmessage with a summary of the default keybindings (useful for beginners)
-    , ((modm .|. shiftMask, xK_slash ), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
     ]
     ++
 
@@ -216,8 +218,11 @@ myLayout = avoidStruts (borders (tiled ||| Mirror tiled ||| Full))
 myManageHook = composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
+    , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore ]
+    , resource  =? "kdesktop"       --> doIgnore
+    , stringProperty "WM_WINDOW_ROLE" =? "pop-up" --> doFloat
+    ]
 
 ------------------------------------------------------------------------
 -- Event handling
@@ -241,7 +246,7 @@ myLogHook = do
   spawnOnce "sh /usr/bin/screenlayout.sh"
   spawnOnce "nitrogen --restore"
   spawnOnce "picom -b"
-  
+
 
 ------------------------------------------------------------------------
 -- Startup hook
@@ -259,8 +264,9 @@ myStartupHook = return ()
 -- Run xmonad with the settings you specify. No need to modify this.
 --
 main = do
-  _ <- spawnPipe "xmobar -x 0 /home/alberto/.config/xmobar/xmobarrc"
-  _ <- spawnPipe "xmobar -x 1 /home/alberto/.config/xmobar/xmobarrc"
+  _ <- spawnPipe "xmobar -x 0 /home/albertofanton/.config/xmobar/xmobarrc"
+  _ <- spawnPipe "xmobar -x 1 /home/albertofanton/.config/xmobar/xmobarrc"
+  _ <- spawnPipe "xmobar -x 2 /home/albertofanton/.config/xmobar/xmobarrc"
   xmonad $ docks defaults
 
 -- A structure containing your configuration settings, overriding
@@ -291,54 +297,3 @@ defaults = def {
         logHook            = myLogHook,
         startupHook        = myStartupHook
     }
-
--- | Finally, a copy of the default bindings in simple textual tabular format.
-help :: String
-help = unlines ["The default modifier key is 'alt'. Default keybindings:",
-    "",
-    "-- launching and killing programs",
-    "mod-Shift-Enter  Launch xterminal",
-    "mod-p            Launch dmenu",
-    "mod-Shift-p      Launch gmrun",
-    "mod-Shift-c      Close/kill the focused window",
-    "mod-Space        Rotate through the available layout algorithms",
-    "mod-Shift-Space  Reset the layouts on the current workSpace to default",
-    "mod-n            Resize/refresh viewed windows to the correct size",
-    "",
-    "-- move focus up or down the window stack",
-    "mod-Tab        Move focus to the next window",
-    "mod-Shift-Tab  Move focus to the previous window",
-    "mod-j          Move focus to the next window",
-    "mod-k          Move focus to the previous window",
-    "mod-m          Move focus to the master window",
-    "",
-    "-- modifying the window order",
-    "mod-Return   Swap the focused window and the master window",
-    "mod-Shift-j  Swap the focused window with the next window",
-    "mod-Shift-k  Swap the focused window with the previous window",
-    "",
-    "-- resizing the master/slave ratio",
-    "mod-h  Shrink the master area",
-    "mod-l  Expand the master area",
-    "",
-    "-- floating layer support",
-    "mod-t  Push window back into tiling; unfloat and re-tile it",
-    "",
-    "-- increase or decrease number of windows in the master area",
-    "mod-comma  (mod-,)   Increment the number of windows in the master area",
-    "mod-period (mod-.)   Deincrement the number of windows in the master area",
-    "",
-    "-- quit, or restart",
-    "mod-Shift-q  Quit xmonad",
-    "mod-q        Restart xmonad",
-    "mod-[1..9]   Switch to workSpace N",
-    "",
-    "-- Workspaces & screens",
-    "mod-Shift-[1..9]   Move client to workspace N",
-    "mod-{w,e,r}        Switch to physical/Xinerama screens 1, 2, or 3",
-    "mod-Shift-{w,e,r}  Move client to screen 1, 2, or 3",
-    "",
-    "-- Mouse bindings: default actions bound to mouse events",
-    "mod-button1  Set the window to floating mode and move by dragging",
-    "mod-button2  Raise the window to the top of the stack",
-    "mod-button3  Set the window to floating mode and resize by dragging"]

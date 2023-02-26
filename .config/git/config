@@ -16,12 +16,14 @@
 
     cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d"
     s = switch
+    st = status
 
 [core]
     editor = vim
     pager = delta
-[includeIf "gitdir/i:~/Work/"]
-    path = ~/Work/gitconfig_work
+    
+[includeIf "gitdir:~/Projects/prima/"]
+    path = ~/.config/git/config_work
 
     
 [pull]
@@ -48,4 +50,5 @@
     file-decoration-style = none
 
 [init]
-    defaultBranch = main
+	defaultBranch = main
+

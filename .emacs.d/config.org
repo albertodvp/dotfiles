@@ -1,19 +1,24 @@
-* Emacs configuation
-
 ** User details
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Alberto Fanton")
-  (setq user-mail-address "alberto.fanton@protonmail.com")
+  (setq user-mail-address "alberto.fanton@prima.it")
 #+END_SRC
 
 ** Packages
 #+BEGIN_SRC emacs-lisp
   (defvar myPackages '(elpy
                        flycheck
+                       ripgrep
+                       exec-path-from-shell
+                       multiple-cursors
+                       smartparens
+                       hasklig-mode
                        py-autopep8
                        blacken
                        ccls
                        org-fragtog
+                       elixir-mode
+                       lsp-docker
                        dockerfile-mode
                        company
                        docker-compose-mode
@@ -26,6 +31,8 @@
                        org-journal
                        org-bullets
                        ob-async
+                       ob-elixir
+                       org-bullets
                        toml-mode
                        yaml-mode
                        haskell-mode
@@ -33,7 +40,6 @@
                        hindent
                        lsp-mode
                        projectile
-                       lsp-java
                        lsp-haskell
                        lsp-treemacs
                        helm-lsp
@@ -60,12 +66,67 @@
     when(not (package-installed-p pkg)) do(return nil)
     finally (return t)))
 
-  (unless(myPackages-installed-p)
-   (message "%s" "Refreshing package database...")
-   (package-refresh-contents)
-   (dolist(pkg myPackages)
-      (when(not (package-installed-p pkg))
-       (package-install pkg))))
+  ;; (unless(myPackages-installed-p)
+  ;;  (message "%s" "Refreshing package database...")
+  ;;  (package-refresh-contents t)
+  ;;  (dolist(pkg myPackages)
+  ;;     (when(not (package-installed-p pkg))
+  ;;     (package-install pkg))))
+#+END_SRC
+
+** Theme   
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :config
+    (load-theme 'doom-one t)
+  (doom-themes-visual-bell-config))
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1))
+
+  ;; (use-package solaire-mode
+  ;; :ensure t
+  ;; :config
+  ;; (solaire-global-mode +1))
+
+  ;; (use-package vscode-dark-plus-theme
+  ;; :ensure t
+  ;; :config
+  ;; (load-theme 'vscode-dark-plus t))
+#+END_SRC
+
+** Misc
+#+BEGIN_SRC emacs-lisp
+  (require 'smartparens-config)
+  (setenv "ESHELL" (expand-file-name "~/bin/eshell"))  
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (global-display-line-numbers-mode)
+  (require 'exec-path-from-shell) ;; if not using the ELPA package
+  (exec-path-from-shell-initialize)
+  (global-prettify-symbols-mode t)
+  (use-package smartparens
+    :ensure t
+    :diminish smartparens-mode
+    :config
+    (progn
+      (require 'smartparens-config)
+      (smartparens-global-mode 1)
+      (show-paren-mode t)))
+  (use-package expand-region
+  :ensure t
+  :bind ("M-m" . er/expand-region))
+
+  (use-package crux
+    :ensure t
+    :bind
+    ("C-k" . crux-smart-kill-line)
+    ("C-c n" . crux-cleanup-buffer-or-region)
+    ("C-c f" . crux-recentf-find-file)
+    ("C-a" . crux-move-beginning-of-line))
+  
+  (use-package golden-ratio :ensure t)
+  (golden-ratio-mode 1)
 #+END_SRC
 
 ** Setup
@@ -78,13 +139,14 @@
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
-  (set-frame-font "Hasklig 16" nil t)
+  (set-frame-font "Hasklig 12" nil t)
   (setq-default indent-tabs-mode nil)
   (setq split-width-threshold 1)
   (custom-set-variables
    '(initial-frame-alist (quote ((fullscreen . maximized)))))
 
   (require 'use-package)
+  (use-package company)
   (add-hook 'after-init-hook 'global-company-mode)
   (require 'ansi-color)
   (defun colorize-compilation-buffer ()
@@ -101,6 +163,7 @@
   (require 'which-key)
   (which-key-mode)
   (which-key-setup-minibuffer)
+  (yas-global-mode)
 
   (define-globalized-minor-mode my-global-hasklig-mode hasklig-mode
     (lambda () (hasklig-mode 1)))
@@ -111,238 +174,93 @@
 
   (setq smerge-command-prefix "\C-cv")
 
-#+END_SRC
+  (use-package diff-hl
+    :ensure t
+    :config
+    (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+    (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode))
+  (use-package minions
+    :ensure t
+    :config
+    (setq minions-mode-line-lighter ""
+          minions-mode-line-delimiters '("" . ""))
+    (minions-mode 1))
+  (global-hl-line-mode)
 
-** Theme   
-#+BEGIN_SRC emacs-lisp
-  (load-theme 'subatomic256 t)
 #+END_SRC
-
-** Misc
-   
+** Multiple cursors
 #+BEGIN_SRC emacs-lisp
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (global-display-line-numbers-mode)
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C-c z") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 #+END_SRC
 
 ** Magit
 #+BEGIN_SRC emacs-lisp
   (global-set-key(kbd "C-x g") 'magit-status)
 #+END_SRC
-
-** DONE ORG
+** Helm
 #+BEGIN_SRC emacs-lisp
+  (use-package helm :ensure t)
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (helm-mode 1)
+
+#+END_SRC
+
+
+** ORG
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-fontify-natively t)
+  (setq org-ellipsis "⤵")
   (require 'ob-async)
   (add-hook 'org-mode-hook 'org-fragtog-mode)
-
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+  (setq org-babel-python-command "python3")
 
   (org-babel-do-load-languages 'org-babel-load-languages
       '(
           (shell . t)
           (haskell . t)
+          (elixir . t)
+          (python . t)                    
       )
   )
   (setq org-image-actual-width nil)
 
   (require 'org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-  (global-set-key(kbd "C-c c") 'org-capture)
+  (use-package org-bullets :ensure t)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+  (setq org-hide-leading-stars t)
+  (setq org-src-tab-acts-natively t)  
 #+END_SRC
 
 *** Journal
 #+BEGIN_SRC emacs-lisp
-  (global-set-key(kbd "C-c e") 'org-journal-new-entry)
+    (global-set-key(kbd "C-c e") 'org-journal-new-entry)
 
-  (use-package org-journal
-  :ensure t
-  :defer t
-  :init
-  ;; Change default prefix key; needs to be set before loading org-journal
-  (setq org-journal-prefix-key "C-c j")
-  :config
-  (setq org-journal-dir "~/Documents/org/journal/"
-        org-journal-date-format "%A, %d %B %Y"))
+    (use-package org-journal
+    :ensure t
+    :defer t
+    :init
+    ;; Change default prefix key; needs to be set before loading org-journal
+    (setq org-journal-prefix-key "C-c j")
+    :config
+    (setq org-journal-dir "~/Documents/org/journal/"
+          org-journal-date-format "%A, %d %B %Y"
+          org-agenda-files '("~/Documents/org")))
 
-  ;; TODO
-  ;; (defun org-journal-workout ()
-  ;;   (setq-local org-journal-dir "~/Documents/journal/workout")
-  ;;   (org-journal-find-location)
-  ;;   )
-  ;; (defun org-journal-journal ()
-  ;;   (setq-local org-journal-dir "~/Documents/journal/journal")
-  ;;   (org-journal-find-location)
-  ;;   )
-
-
-  (defun org-journal-find-location ()
-    ;; Open today's journal, but specify a non-nil prefix argument in order to
-    ;; inhibit inserting the heading; org-capture will insert the heading.
-    (org-journal-new-entry t)
-    ;; Positipon point on the journal's top-level heading so that org-capture
-    ;; will add the new entry as a child entry.
-    (goto-char (point-min)))
-
-#+END_SRC
-
-
-*** Capture
-  #+BEGIN_SRC emacs-lisp
-  (global-set-key(kbd "C-c c") 'org-capture)
-  (setq org-capture-templates '(("j" "Journal prompts")
-                                ("jm" "Morning journal prompts entry" entry(function org-journal-find-location)
-                                 (file "~/Documents/org/templates/daily-template-morning.org"))
-                                ("je" "Evening journal prompts entry" entry(function org-journal-find-location)
-                                 (file "~/Documents/org/templates/daily-template-evening.org"))
-  ))
-  (setq org-roam-capture-templates '( ("d" "default" plain (function org-roam--capture-get-point)
-     "%?"
-     :file-name "%<%Y%m%d%H%M%S>-${slug}"
-     :head "#+title: ${title}\n"
-     :unnarrowed t)
-    ("b" "book" entry (function org-roam--capture-get-point)
-     (file "~/Documents/org/templates/book.org")
-     :file-name "book/%<%Y%m%d%H%M%S>-${slug}"
-     :head "#+title: ${title}\n#+roam_tags: book\n\n")
-  ))
+    (defun org-journal-find-location ()
+      ;; Open today's journal, but specify a non-nil prefix argument in order to
+      ;; inhibit inserting the heading; org-capture will insert the heading.
+      (org-journal-new-entry t)
+      ;; Positipon point on the journal's top-level heading so that org-capture
+      ;; will add the new entry as a child entry.
+      (goto-char (point-min)))
 
   
-  #+END_SRC
-
-*** Roam
-  #+BEGIN_SRC emacs-lisp
-  (use-package org-roam
-      :ensure t
-      :init
-      :hook
-      (after-init . org-roam-mode)
-      :custom
-      (org-roam-directory "~/Documents/org/second-brain")
-      :bind (:map org-roam-mode-map
-              (("C-c n l" . org-roam)
-               ("C-c n f" . org-roam-find-file)
-               ("C-c n g" . org-roam-graph)
-               ("C-c n c" . org-roam-capture))
-              :map org-mode-map
-              (("C-c n i" . org-roam-insert))
-              (("C-c n I" . org-roam-insert-immediate))))
-  #+END_SRC
-
-** Python
-#+BEGIN_SRC emacs-lisp
-  (elpy-enable)
-
-  (when(require 'flycheck nil t)
-   (setq elpy-modules(delq 'elpy-module-flymake elpy-modules))
-   (add-hook 'elpy-mode-hook 'flycheck-mode))
-
-  (require 'py-autopep8)
-
-  (add-hook 'elpy-mode-hook
-   (lambda ()
-  ;;  (add-hook 'before-save-hook 'pyimport-remove-unused t t)
-    (add-hook 'before-save-hook 'py-isort-buffer t t)
-    (add-hook 'before-save-hook 'py-autopep8-buffer t t)
-    (add-hook 'before-save-hook 'blacken-buffer t t)))
-
-  (setq elpy-rpc-virtualenv-path 'current)
-  (setq elpy-test-runner 'elpy-test-pytest-runner)
-
-  (defalias 'workon 'pyvenv-workon)
-
-  (use-package lsp-python-ms
-  :ensure t
-  :init (setq lsp-python-ms-auto-install-server t)
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-python-ms)
-                          (lsp))))  ; or lsp-deferred
-
-#+END_SRC
-
-** Haskell
-#+BEGIN_SRC emacs-lisp
-  (require 'haskell-mode)
-  (require 'haskell-interactive-mode)
-  (require 'haskell-process)
-  (require 'haskell-cabal)
-  (require 'hindent)
-  ;; needed packages: stylish-haskell, hlint
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
-  (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
-
-  (define-key haskell-mode-map (kbd "C-c C-o") 'haskell-compile)
-  (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
-  (define-key haskell-mode-map (kbd "<f9>") 'haskell-mode-format-imports)
-  (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
-  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
-  (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
-  (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
-  (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
-  (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
-  (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
-
-  (define-key haskell-cabal-mode-map (kbd "C-c C-o") 'haskell-compile)
-  (define-key haskell-cabal-mode-map (kbd "C-`") 'haskell-interactive-bring)
-  (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
-  (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)
-
-  (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def)
-
-
-  (custom-set-variables
-   '(haskell-compile-cabal-build-command "stack build")
-   '(haskell-check-command "hlint")
-   '(flycheck-disabled-checkers '(haskell-stack-ghc))
-   '(haskell-process-suggest-remove-import-lines t)
-   '(haskell-process-auto-import-loaded-modules t)
-   '(haskell-process-type 'stack-ghci)
-   '(haskell-stylish-on-save t)
-   '(haskell-process-log t))
-
-  (require 'lsp)
-  (require 'lsp-haskell)
-  ;; Hooks so haskell and literate haskell major modes trigger LSP setup
-  (add-hook 'haskell-mode-hook #'lsp)
-
-
-#+END_SRC
-
-** Java
-#+BEGIN_SRC emacs-lisp
-  (require 'lsp-java)
-  (add-hook 'java-mode-hook #'lsp)
-
-
-  (add-hook 'java-mode-hook (defun my-set-java-tab-width () (setq tab-width 2)))
-  (setq lsp-java-format-settings-url "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml")
-  (setq lsp-java-format-settings-profile "GoogleStyle")
-
-#+END_SRC
-
-** LSP
-#+BEGIN_SRC emacs-lisp
-(use-package lsp-mode
-  :commands lsp
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :config
-  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-  :hook (lsp-mode . lsp-enable-which-key-integration))
-
-(use-package lsp-ui
-  :init
-  (setq lsp-ui-doc-position 'at-point)
-  )
-
-
-#+END_SRC
-
-** Readlgud
-#+BEGIN_SRC emacs-lisp
-  (require 'realgud)
-  (setq realgud:pdb-command-name "python")
 #+END_SRC
 
 ** Projectile
@@ -353,6 +271,111 @@
 
   (setq projectile-project-search-path '("~/Projects/" "~/Work/" "~/Learning"))
 
+#+END_SRC
+
+** Modeline
+Remember to call ~M-x all-the-icons-install-fonts~
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
+
+#+END_SRC
+
+** Treemacs
+#+BEGIN_SRC emacs-lisp
+(use-package treemacs
+  :ensure t
+  :bind
+  (:map global-map
+    ([f4] . treemacs)
+    ([f5] . treemacs-select-window))
+  :config
+  (setq treemacs-is-never-other-window t))
+#+END_SRC
+
+** LSP
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :commands lsp
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :config
+    (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+    :hook (lsp-mode . lsp-enable-which-key-integration))
+
+  (use-package lsp-ui
+    :init
+    (setq lsp-ui-doc-position 'at-point)
+    (setq lsp-ui-doc-show-with-cursor t)    
+    )
+  (add-hook 'haskell-mode-hook #'lsp-deferred)
+  (add-hook 'elixir-mode-hook #'lsp-deferred)
+  (add-hook 'rust-mode-hook #'lsp-deferred)
+
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+#+END_SRC
+
+
+* Languages
+** Haskell
+#+BEGIN_SRC emacs-lisp
+  (use-package haskell-mode :ensure t)
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+
+  (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
+  (define-key haskell-mode-map (kbd "<f9>") 'haskell-mode-format-imports)
+  ;(define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def)
+  ;(define-key haskell-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
+  (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)  
+  (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
+
+  (custom-set-variables
+   '(haskell-stylish-on-save t)
+   '(haskell-process-suggest-remove-import-lines t)
+   '(haskell-process-auto-import-loaded-modules t)
+   '(haskell-tags-on-save t)
+   '(haskell-process-log t)
+   '(haskell-process-suggest-hoogle-imports t))
+   '(haskell-process-args-stack-ghci '("--ghci-options=-ferror-spans"))
+   '(haskell-process-log t)
+   '(haskell-process-suggest-remove-import-lines t)
+   '(haskell-process-type 'stack-ghci)
+
+  (add-hook 'haskell-mode-hook
+            (lambda ()
+            (set (make-local-variable 'company-backends)
+                 (append '((company-capf company-dabbrev-code))
+                         company-backends))))
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
+
+  (add-hook 'lsp-after-initialize-hook
+          '(lambda ()
+             (lsp--set-configuration
+              '(
+                (:haskell (:plugin (:tactics (:config (:timeout_duration 5)))))
+                (:haskell (:formattingProviderplugin :stylish))
+                )
+              )))
+#+END_SRC
+
+
+
+** Elixir
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :commands lsp
+    :ensure t
+    :diminish lsp-mode
+    :hook
+    (elixir-mode . lsp)
+    :init
+    (add-to-list 'exec-path "~/Projects/elixir-ls/release/"))
 #+END_SRC
 
 ** Git gutter
@@ -378,50 +401,36 @@
   (global-set-key (kbd "C-x v SPC") #'git-gutter:mark-hunk)
 #+END_SRC
 
-** Modeline
-Remember to call ~M-x all-the-icons-install-fonts~
+** Rust
 #+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
-
 #+END_SRC
+** PHP
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'php-mode-hook 'lsp)
 
-** Treemacs
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      treemacs-space-between-root-nodes nil
+      company-idle-delay 0.0
+      company-minimum-prefix-length 1
+      lsp-idle-delay 0.1)  ;; clangd is fast
+
+(with-eval-after-load 'lsp-mode
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+  (require 'dap-php)
+  (yas-global-mode))
+#+END_SRC
+** LSP-docker-plutus
 #+BEGIN_SRC emacs-lisp
-(use-package treemacs
-  :ensure t
-  :bind
-  (:map global-map
-    ([f4] . treemacs)
-    ([f5] . treemacs-select-window))
-  :config
-  (setq treemacs-is-never-other-window t))
+(defvar lsp-language-id-configuration
+  '(...
+    (haskell-mode . "plutus")
+    ...))
+;; if you are adding the support for your language server in separate repo use
+;; (add-to-list 'lsp-language-id-configuration '(python-mode . "python"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "plutus-ls")
+                  :activation-fn (lsp-activate-on "plutus")
+                  :server-id 'plutus-ls))
 #+END_SRC
-** c
-#+BEGIN_SRC emacs-lisp
-
-  ;; sample `helm' configuration use https://github.com/emacs-helm/helm/ for details
-  (helm-mode)
-  (require 'helm-xref)
-  (define-key global-map [remap find-file] #'helm-find-files)
-  (define-key global-map [remap execute-extended-command] #'helm-M-x)
-  (define-key global-map [remap switch-to-buffer] #'helm-mini)
-
-  (which-key-mode)
-  (add-hook 'c-mode-hook 'lsp)
-  (add-hook 'c++-mode-hook 'lsp)
-
-  (setq gc-cons-threshold (* 100 1024 1024)
-        read-process-output-max (* 1024 1024)
-        treemacs-space-between-root-nodes nil
-        company-idle-delay 0.0
-        company-minimum-prefix-length 1
-        lsp-idle-delay 0.1)  ;; clangd is fast
-
-  (with-eval-after-load 'lsp-mode
-    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-    (require 'dap-cpptools)
-    (yas-global-mode))
-#+END_SRC
-
