@@ -1,2 +1,9 @@
 * Dotfiles
 My dotfiles
+
+** Get dotfiles
+#+BEGIN_SRC bash
+  git clone --no-checkout git@github.com:albertodvp/dotfiles.git
+  git config core.worktree '../../'
+  git reset --hard origin/master
+#+END_SRC

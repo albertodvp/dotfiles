@@ -244,7 +244,7 @@ myEventHook = fullscreenEventHook
 myLogHook = do
   updatePointer (0.5, 0.5) (0, 0)
   spawnOnce "sh /usr/bin/screenlayout.sh"
-  spawnOnce "nitrogen --restore"
+  spawnOnce "feh --bg-scale ~/Pictures/Backgrounds/todoist2023.jpg"
   spawnOnce "picom -b"
 
 
