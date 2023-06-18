@@ -123,3 +123,25 @@ export NVM_DIR="$HOME/.nvm"
 eval "$(zoxide init zsh)"
 eval "$(direnv hook zsh)"             
 alias bat=batcat
+
+# add Pulumi to the PATH
+export PATH=$PATH:$HOME/.pulumi/bin
+
+# fnm
+export PATH="/home/albertofanton/Data/fnm:$PATH"
+eval "`fnm env`"
+
+# fnm
+export PATH="/home/albertofanton/Data/fnm:$PATH"
+eval "`fnm env`"
+
+# fnm
+export PATH="/home/albertofanton/.fnm:$PATH"
+eval "`fnm env`"
+
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
