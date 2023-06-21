@@ -1,4 +1,6 @@
-** User details
+* User details
+
+
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Alberto Fanton")
   (setq user-mail-address "alberto.fanton@prima.it")
@@ -7,6 +9,7 @@
 ** Packages
 #+BEGIN_SRC emacs-lisp
   (defvar myPackages '(elpy
+                       yafolding
                        flycheck
                        ripgrep
                        exec-path-from-shell
@@ -81,9 +84,6 @@
     :config
     (load-theme 'doom-one t)
   (doom-themes-visual-bell-config))
-  (use-package doom-modeline
-    :ensure t
-    :init (doom-modeline-mode 1))
 
   ;; (use-package solaire-mode
   ;; :ensure t
@@ -96,37 +96,33 @@
   ;; (load-theme 'vscode-dark-plus t))
 #+END_SRC
 
+#+RESULTS:
+
+
 ** Misc
 #+BEGIN_SRC emacs-lisp
-  (require 'smartparens-config)
-  (setenv "ESHELL" (expand-file-name "~/bin/eshell"))  
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (global-display-line-numbers-mode)
-  (require 'exec-path-from-shell) ;; if not using the ELPA package
-  (exec-path-from-shell-initialize)
-  (global-prettify-symbols-mode t)
-  (use-package smartparens
+    (require 'smartparens-config)
+    (setenv "ESHELL" (expand-file-name "~/bin/eshell"))
+    (defalias 'yes-or-no-p 'y-or-n-p)
+    (global-display-line-numbers-mode)
+    (require 'exec-path-from-shell) ;; if not using the ELPA package
+    (exec-path-from-shell-initialize)
+    (global-prettify-symbols-mode t)
+    (use-package smartparens
+      :ensure t
+      :diminish smartparens-mode
+      :config
+      (progn
+        (require 'smartparens-config)
+        (smartparens-global-mode 1)
+        (show-paren-mode t)))
+    (use-package expand-region
     :ensure t
-    :diminish smartparens-mode
-    :config
-    (progn
-      (require 'smartparens-config)
-      (smartparens-global-mode 1)
-      (show-paren-mode t)))
-  (use-package expand-region
-  :ensure t
-  :bind ("M-m" . er/expand-region))
+    :bind ("M-m" . er/expand-region))
 
-  (use-package crux
-    :ensure t
-    :bind
-    ("C-k" . crux-smart-kill-line)
-    ("C-c n" . crux-cleanup-buffer-or-region)
-    ("C-c f" . crux-recentf-find-file)
-    ("C-a" . crux-move-beginning-of-line))
-  
-  (use-package golden-ratio :ensure t)
-  (golden-ratio-mode 1)
+    (add-to-list 'load-path "~/.emacs.d/site-lisp")
+    (progn (cd "~/.emacs.d/site-lisp")
+         (normal-top-level-add-subdirs-to-load-path))
 #+END_SRC
 
 ** Setup
@@ -188,6 +184,7 @@
   (global-hl-line-mode)
 
 #+END_SRC
+
 ** Multiple cursors
 #+BEGIN_SRC emacs-lisp
   (require 'multiple-cursors)
@@ -218,6 +215,7 @@
   (add-hook 'org-mode-hook 'org-fragtog-mode)
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
   (setq org-babel-python-command "python3")
+  (setq org-confirm-babel-evaluate nil)
 
   (org-babel-do-load-languages 'org-babel-load-languages
       '(
@@ -276,9 +274,11 @@
 ** Modeline
 Remember to call ~M-x all-the-icons-install-fonts~
 #+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1))
+  (use-package all-the-icons
+    :if (display-graphic-p))
 
 #+END_SRC
 
@@ -335,7 +335,7 @@ Remember to call ~M-x all-the-icons-install-fonts~
   (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
 
   (custom-set-variables
-   '(haskell-stylish-on-save t)
+   ;;'(haskell-stylish-on-save t)
    '(haskell-process-suggest-remove-import-lines t)
    '(haskell-process-auto-import-loaded-modules t)
    '(haskell-tags-on-save t)
@@ -362,9 +362,11 @@ Remember to call ~M-x all-the-icons-install-fonts~
                 (:haskell (:formattingProviderplugin :stylish))
                 )
               )))
+  (require 'hs-lint)
+  (defun my-haskell-mode-hook ()
+    (local-set-key "\C-cl" 'hs-lint))
+  (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 #+END_SRC
-
-
 
 ** Elixir
 #+BEGIN_SRC emacs-lisp
@@ -433,4 +435,22 @@ Remember to call ~M-x all-the-icons-install-fonts~
  (make-lsp-client :new-connection (lsp-stdio-connection "plutus-ls")
                   :activation-fn (lsp-activate-on "plutus")
                   :server-id 'plutus-ls))
+#+END_SRC
+** Python
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+
+  (use-package poetry
+   :ensure t)
+#+END_SRC
+** Yaml
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-yaml
+  :after lsp
+  :config
+  (add-hook 'yaml-mode-hook #'lsp))
 #+END_SRC

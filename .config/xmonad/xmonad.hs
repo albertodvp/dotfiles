@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wno-deprecations #-}
---
+
 -- xmonad example config file.
 --
 -- A template showing all available configuration hooks,
@@ -198,7 +198,7 @@ myLayout = avoidStruts (borders (tiled ||| Mirror tiled ||| Full))
      delta   = 3/100
 
      -- Screen and window borders
-     borders = spacingRaw False (Border 0 10 10 10) True (Border 10 10 10 10) True
+     borders = spacingRaw False (Border 0 10 10 10 ) True (Border 10 10 10 10) True
 
 ------------------------------------------------------------------------
 -- Window rules:
