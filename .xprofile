@@ -1,7 +1,0 @@
-#~/bin/bash
-
-export PATH=$PATH:$HOME/bin:$HOME/.cargo/bin:$NPM_PACKAGES/bin:$HOME/.local/bin:$HOME/.cabal/bin:$HOME/.ghcup/bin:/snap/bin
-
-
-export XDG_DATA_HOME=$HOME/Data
-

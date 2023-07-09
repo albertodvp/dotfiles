@@ -9,8 +9,11 @@
 ** Packages
 #+BEGIN_SRC emacs-lisp
   (defvar myPackages '(elpy
+                       smartparens
                        yafolding
+                       
                        flycheck
+                       ace-jump-mode
                        ripgrep
                        exec-path-from-shell
                        multiple-cursors
@@ -27,6 +30,7 @@
                        docker-compose-mode
                        pyimport
                        py-isort
+                       py-yapf
                        lsp-python-ms
                        magit
                        markdown-mode
@@ -40,6 +44,7 @@
                        yaml-mode
                        haskell-mode
                        flycheck-haskell
+                       flycheck-projectile
                        hindent
                        lsp-mode
                        projectile
@@ -55,7 +60,6 @@
                        subatomic256-theme
                        git-gutter
                        treemacs
-                       all-the-icons
                        doom-modeline
                        org-roam
                        hydra
@@ -69,12 +73,12 @@
     when(not (package-installed-p pkg)) do(return nil)
     finally (return t)))
 
-  ;; (unless(myPackages-installed-p)
-  ;;  (message "%s" "Refreshing package database...")
-  ;;  (package-refresh-contents t)
-  ;;  (dolist(pkg myPackages)
-  ;;     (when(not (package-installed-p pkg))
-  ;;     (package-install pkg))))
+  (unless(myPackages-installed-p)
+   (message "%s" "Refreshing package database...")
+   (package-refresh-contents t)
+   (dolist(pkg myPackages)
+      (when(not (package-installed-p pkg))
+      (package-install pkg))))
 #+END_SRC
 
 ** Theme   
@@ -90,39 +94,29 @@
   ;; :config
   ;; (solaire-global-mode +1))
 
-  ;; (use-package vscode-dark-plus-theme
-  ;; :ensure t
-  ;; :config
-  ;; (load-theme 'vscode-dark-plus t))
 #+END_SRC
-
-#+RESULTS:
 
 
 ** Misc
 #+BEGIN_SRC emacs-lisp
-    (require 'smartparens-config)
-    (setenv "ESHELL" (expand-file-name "~/bin/eshell"))
-    (defalias 'yes-or-no-p 'y-or-n-p)
-    (global-display-line-numbers-mode)
-    (require 'exec-path-from-shell) ;; if not using the ELPA package
-    (exec-path-from-shell-initialize)
-    (global-prettify-symbols-mode t)
-    (use-package smartparens
-      :ensure t
-      :diminish smartparens-mode
-      :config
-      (progn
-        (require 'smartparens-config)
-        (smartparens-global-mode 1)
-        (show-paren-mode t)))
-    (use-package expand-region
+  (require 'smartparens-config)
+  (setenv "ESHELL" (expand-file-name "~/bin/eshell"))
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (global-display-line-numbers-mode)
+  (require 'exec-path-from-shell) ;; if not using the ELPA package
+  (exec-path-from-shell-initialize)
+  (global-prettify-symbols-mode t)
+  (use-package smartparens
     :ensure t
-    :bind ("M-m" . er/expand-region))
-
-    (add-to-list 'load-path "~/.emacs.d/site-lisp")
-    (progn (cd "~/.emacs.d/site-lisp")
-         (normal-top-level-add-subdirs-to-load-path))
+    :diminish smartparens-mode
+    :config
+    (progn
+      (require 'smartparens-config)
+      (smartparens-global-mode 1)
+      (show-paren-mode t)))
+  (use-package expand-region
+  :ensure t
+  :bind ("M-m" . er/expand-region))
 #+END_SRC
 
 ** Setup
@@ -272,15 +266,21 @@
 #+END_SRC
 
 ** Modeline
-Remember to call ~M-x all-the-icons-install-fonts~
+Run ~nerd-icons-install-fonts~
 #+BEGIN_SRC emacs-lisp
   (use-package doom-modeline
     :ensure t
     :init (doom-modeline-mode 1))
-  (use-package all-the-icons
-    :if (display-graphic-p))
 
+  (use-package nerd-icons
+  ;; :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+  )
 #+END_SRC
+
 
 ** Treemacs
 #+BEGIN_SRC emacs-lisp
@@ -296,29 +296,32 @@ Remember to call ~M-x all-the-icons-install-fonts~
 
 ** LSP
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :commands lsp
-    :init
-    (setq lsp-keymap-prefix "C-c l")
-    :config
-    (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-    :hook (lsp-mode . lsp-enable-which-key-integration))
+    (use-package lsp-mode
+      :commands lsp
+      :init
+      (setq lsp-keymap-prefix "C-c l")
+      :config
+      (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+      :hook
+      (sh-mode . lsp)
+      (lsp-mode . lsp-enable-which-key-integration)
+      )
 
-  (use-package lsp-ui
-    :init
-    (setq lsp-ui-doc-position 'at-point)
-    (setq lsp-ui-doc-show-with-cursor t)    
-    )
-  (add-hook 'haskell-mode-hook #'lsp-deferred)
-  (add-hook 'elixir-mode-hook #'lsp-deferred)
-  (add-hook 'rust-mode-hook #'lsp-deferred)
+    (use-package lsp-ui
+      :init
+      (setq lsp-ui-doc-position 'at-point)
+      (setq lsp-ui-doc-show-with-cursor t)    
+      )
+    (add-hook 'haskell-mode-hook #'lsp-deferred)
+    (add-hook 'elixir-mode-hook #'lsp-deferred)
+    (add-hook 'rust-mode-hook #'lsp-deferred)
 
-  (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+    (use-package lsp-ui :commands lsp-ui-mode)
+    (use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+    (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
 #+END_SRC
-
 
 * Languages
 ** Haskell
@@ -362,10 +365,6 @@ Remember to call ~M-x all-the-icons-install-fonts~
                 (:haskell (:formattingProviderplugin :stylish))
                 )
               )))
-  (require 'hs-lint)
-  (defun my-haskell-mode-hook ()
-    (local-set-key "\C-cl" 'hs-lint))
-  (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 #+END_SRC
 
 ** Elixir
@@ -422,20 +421,7 @@ Remember to call ~M-x all-the-icons-install-fonts~
   (require 'dap-php)
   (yas-global-mode))
 #+END_SRC
-** LSP-docker-plutus
-#+BEGIN_SRC emacs-lisp
-(defvar lsp-language-id-configuration
-  '(...
-    (haskell-mode . "plutus")
-    ...))
-;; if you are adding the support for your language server in separate repo use
-;; (add-to-list 'lsp-language-id-configuration '(python-mode . "python"))
 
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "plutus-ls")
-                  :activation-fn (lsp-activate-on "plutus")
-                  :server-id 'plutus-ls))
-#+END_SRC
 ** Python
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-pyright
@@ -446,11 +432,36 @@ Remember to call ~M-x all-the-icons-install-fonts~
 
   (use-package poetry
    :ensure t)
+  ;; (add-hook 'python-mode-hook 'python-isort-on-save-mode)
+  ;; (add-hook 'python-mode-hook 'py-yapf-enable-on-save)
 #+END_SRC
-** Yaml
+
+
+** Ace jump
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-yaml
-  :after lsp
-  :config
-  (add-hook 'yaml-mode-hook #'lsp))
+(autoload
+  'ace-jump-mode
+  "ace-jump-mode"
+  "Emacs quick move minor mode"
+  t)
+;; you can select the key you prefer to
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+
+;;
+;; enable a more powerful jump back function from ace jump mode
+;;
+(autoload
+  'ace-jump-mode-pop-mark
+  "ace-jump-mode"
+  "Ace jump back:-)"
+  t)
+(eval-after-load "ace-jump-mode"
+  '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x j") 'ace-jump-mode-pop-mark)
+#+END_SRC
+
+** Nix Mode
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode
+  :mode "\\.nix\\'")
 #+END_SRC

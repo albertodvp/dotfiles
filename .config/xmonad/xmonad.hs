@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wno-deprecations #-}
-
 -- xmonad example config file.
 --
 -- A template showing all available configuration hooks,
@@ -71,7 +70,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_v), spawn "vivaldi-stable")
     , ((modm .|. shiftMask, xK_t), spawn "emacs")
 
-    , ((modm              , xK_Escape), spawn "/home/albertofanton/bin/layout_switch.sh")
+    , ((modm              , xK_Escape), spawn "/home/alberto/bin/layout_switch.sh")
 
     -- launch dmenu
     , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 30' -show-icons")

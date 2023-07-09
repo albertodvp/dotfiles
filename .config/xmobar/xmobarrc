@@ -1,4 +1,4 @@
-Config { font = "xft:Hack:size=18"
+Config { font = "xft:Hack:pixelsize=16:antialias=true:autohint=true"
        , additionalFonts = []
        , borderColor = "black"
        , border = TopB
@@ -20,7 +20,7 @@ Config { font = "xft:Hack:size=18"
                                           "--normal","green",
                                           "--high","red",
                                           "--low","lightblue"] 36000
-                    , Run Network "wlp0s20f3" ["-L","0","-H","32",
+                    , Run Network "wlp3s0" ["-L","0","-H","32",
                                           "--normal","green","--high","red"] 10
                     , Run Cpu ["-L","3","-H","50",
                                "--normal","green","--high","red"] 10
@@ -31,6 +31,6 @@ Config { font = "xft:Hack:size=18"
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%cpu% | %memory% * %swap% | %wlp0s20f3% }\
+       , template = "%cpu% | %memory% * %swap% | %wlp3s0% }\
                     \{ <fc=#ee9a00>%date%</fc>| %LIML% | %uname%"
        }

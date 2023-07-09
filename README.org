@@ -1,9 +1,17 @@
 * Dotfiles
-My dotfiles
+My dotfiles - this repo is W.I.P.
+I'm working in nixify everything.
+I'm aiming to have only ~emacs~, ~xmonad~ and ~xmobar~ with custom configuration files, on:
+- ~$HOME/.emacs.d/congig.org~
+- ~$HOME/.emacs.d/congig.org~
+- ~$HOME/.config/xmobar/xmobarrc~
+- ~$HOME/.config/xmonad/xmonad.hs~  
 
 ** Get dotfiles
 #+BEGIN_SRC bash
   git clone --no-checkout git@github.com:albertodvp/dotfiles.git
+  echo "*" > .gitignore
+  cd dotfiles
   git config core.worktree '../../'
   git reset --hard origin/master
 #+END_SRC
