@@ -15,3 +15,5 @@ I'm aiming to have only ~emacs~, ~xmonad~ and ~xmobar~ with custom configuration
   git config core.worktree '../../'
   git reset --hard origin/master
 #+END_SRC
+
+This solution is temporary and I have to manually move the `configuration.nix` 

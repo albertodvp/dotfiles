@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 current_layout=$(setxkbmap -print | awk -F"+" '/xkb_symbols/ {print $2}')
 
