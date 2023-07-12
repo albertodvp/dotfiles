@@ -1,6 +1,5 @@
 * User details
 
-
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Alberto Fanton")
   (setq user-mail-address "alberto.fanton@prima.it")
@@ -11,7 +10,7 @@
   (defvar myPackages '(elpy
                        smartparens
                        yafolding
-                       
+                       nix-mode
                        flycheck
                        ace-jump-mode
                        ripgrep
@@ -129,7 +128,7 @@
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
-  (set-frame-font "Hasklig 12" nil t)
+  (add-to-list 'default-frame-alist '(font . "Hasklig-15"))
   (setq-default indent-tabs-mode nil)
   (setq split-width-threshold 1)
   (custom-set-variables
@@ -178,6 +177,7 @@
   (global-hl-line-mode)
 
 #+END_SRC
+
 
 ** Multiple cursors
 #+BEGIN_SRC emacs-lisp
@@ -465,3 +465,4 @@ Run ~nerd-icons-install-fonts~
 (use-package nix-mode
   :mode "\\.nix\\'")
 #+END_SRC
+

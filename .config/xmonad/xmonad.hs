@@ -19,10 +19,8 @@ import           XMonad.Layout.Spacing
 import qualified XMonad.StackSet              as W
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
+import           XMonad.Actions.PhysicalScreens
 
--- The preferred terminal program, which is used in a binding below and by
--- certain contrib modules.
---
 myTerminal      = "alacritty"
 
 -- Whether focus follows the mouse pointer.
@@ -67,8 +65,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
-    , ((modm .|. shiftMask, xK_v), spawn "vivaldi-stable")
-    , ((modm .|. shiftMask, xK_t), spawn "emacs")
+    , ((modm .|. shiftMask, xK_b), spawn "firefox")
+    , ((modm .|. shiftMask, xK_t), spawn "emacsclient -c")
 
     , ((modm              , xK_Escape), spawn "/home/alberto/bin/layout_switch.sh")
 
@@ -145,12 +143,12 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     --
     -- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3
-    -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
+    -- mod-shift-{r,e,w}, Move client to screen 1, 2, or 3
     --
-    [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
-        | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
-        , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
-
+    -- TODO not very robust, the order of the monitor changes sometimes
+    [((modm .|. mask, key), f sc)
+    | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
+    , (f, mask) <- [(viewScreen def, 0), (sendToScreen def, shiftMask)]]
 
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse events
@@ -242,9 +240,7 @@ myEventHook = fullscreenEventHook
 --
 myLogHook = do
   updatePointer (0.5, 0.5) (0, 0)
-  spawnOnce "sh /usr/bin/screenlayout.sh"
-  spawnOnce "feh --bg-scale ~/Pictures/Backgrounds/todoist2023.jpg"
-  spawnOnce "picom -b"
+  spawnOnce "sh $HOME/bin/screen-layouts/main"
 
 
 ------------------------------------------------------------------------
@@ -260,14 +256,14 @@ myStartupHook = return ()
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
 
+--
 -- Run xmonad with the settings you specify. No need to modify this.
 --
 main = do
-  _ <- spawnPipe "xmobar -x 0 /home/albertofanton/.config/xmobar/xmobarrc"
-  _ <- spawnPipe "xmobar -x 1 /home/albertofanton/.config/xmobar/xmobarrc"
-  _ <- spawnPipe "xmobar -x 2 /home/albertofanton/.config/xmobar/xmobarrc"
+  _ <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/xmobar.hs"
+  _ <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/xmobar.hs"
+  _ <- spawnPipe "xmobar -x 2 $HOME/.config/xmobar/xmobar.hs"
   xmonad $ docks defaults
-
 -- A structure containing your configuration settings, overriding
 -- fields in the default config. Any you don't override, will
 -- use the defaults defined in xmonad/XMonad/Config.hs
