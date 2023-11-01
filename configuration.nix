@@ -167,6 +167,7 @@
         libnotify
         dunst
         nixpkgs-fmt
+        pavucontrol
       ];
     };
   };
