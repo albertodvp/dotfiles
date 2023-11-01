@@ -1,11 +1,13 @@
 * Dotfiles
-My dotfiles - this repo is W.I.P.
-I'm working in nixify everything.
-I'm aiming to have only ~emacs~, ~xmonad~ and ~xmobar~ with custom configuration files, on:
-- ~$HOME/.emacs.d/congig.org~
-- ~$HOME/.emacs.d/congig.org~
-- ~$HOME/.config/xmobar/xmobarrc~
-- ~$HOME/.config/xmonad/xmonad.hs~  
+My dotfiles - this repo is a never ending WIP.
+
+My current environment is based on:
+- nixos
+- xmonad
+- xmobar
+- termonad
+- emacs
+  
 
 ** Get dotfiles
 #+BEGIN_SRC bash
@@ -17,3 +19,12 @@ I'm aiming to have only ~emacs~, ~xmonad~ and ~xmobar~ with custom configuration
 #+END_SRC
 
 This solution is temporary and I have to manually move the `configuration.nix` 
+
+** Thing I have to do manually
+On Firefox, install:
+- Vimium-FF
+
+On emacs run:
+```
+nerd-icons-install-fonts
+```

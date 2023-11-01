@@ -20,8 +20,9 @@ import qualified XMonad.StackSet              as W
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
 import           XMonad.Actions.PhysicalScreens
+import           XMonad.Hooks.DynamicLog
 
-myTerminal      = "alacritty"
+myTerminal      = "termonad"
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -68,9 +69,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_b), spawn "firefox")
     , ((modm .|. shiftMask, xK_t), spawn "emacsclient -c")
 
-    , ((modm              , xK_Escape), spawn "/home/alberto/bin/layout_switch.sh")
+    , ((modm              , xK_Escape), spawn ".bin/layout_switch.sh")
 
-    -- launch dmenu
+    -- launch rofi
     , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 30' -show-icons")
 
     -- close focused window
@@ -128,7 +129,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
 
     -- Restart xmonad
-    , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    , ((modm              , xK_q     ), spawn "pkill xmobar; xmonad --recompile; xmonad --restart")
+    -- Lock the screen
+    , ((modm .|. shiftMask , xK_l     ), spawn "slock")
+    
     ]
     ++
 
@@ -238,11 +242,13 @@ myEventHook = fullscreenEventHook
 -- Perform an arbitrary action on each internal state change or X event.
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
-myLogHook = do
-  updatePointer (0.5, 0.5) (0, 0)
-  spawnOnce "sh $HOME/bin/screen-layouts/main"
-
-
+myLogHook h = dynamicLogWithPP $ def
+  { ppLayout = wrap "(<fc=#e4b63c>" "</fc>)"
+  , ppTitleSanitize = const ""
+  , ppVisible = wrap "(" ")"
+  , ppCurrent = wrap "<fc=#b8473d>[</fc><fc=#7cac7a>" "</fc><fc=#b8473d>]</fc>"
+  , ppOutput = hPutStrLn h
+  }
 ------------------------------------------------------------------------
 -- Startup hook
 
@@ -260,17 +266,8 @@ myStartupHook = return ()
 -- Run xmonad with the settings you specify. No need to modify this.
 --
 main = do
-  _ <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/xmobar.hs"
-  _ <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/xmobar.hs"
-  _ <- spawnPipe "xmobar -x 2 $HOME/.config/xmobar/xmobar.hs"
-  xmonad $ docks defaults
--- A structure containing your configuration settings, overriding
--- fields in the default config. Any you don't override, will
--- use the defaults defined in xmonad/XMonad/Config.hs
---
--- No need to modify this.
---
-defaults = def {
+  xmobarProc <- spawnPipe "xmobar -x 0 .config/xmobar/xmobar.hs"
+  xmonad $ docks def {
       -- simple stuff
         terminal           = myTerminal,
         focusFollowsMouse  = myFocusFollowsMouse,
@@ -289,6 +286,6 @@ defaults = def {
         layoutHook         = myLayout,
         manageHook         = myManageHook,
         handleEventHook    = myEventHook,
-        logHook            = myLogHook,
+        logHook            = myLogHook xmobarProc,
         startupHook        = myStartupHook
     }

@@ -466,3 +466,11 @@ Run ~nerd-icons-install-fonts~
 (use-package nix-mode
   :mode "\\.nix\\'")
 #+END_SRC
+
+** Direnv Mode
+#+BEGIN_SRC emacs-lisp
+  (use-package direnv
+    :ensure t
+  :config
+  (direnv-mode))
+#+END_SRC
