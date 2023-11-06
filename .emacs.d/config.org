@@ -9,6 +9,7 @@
 #+BEGIN_SRC emacs-lisp
   (defvar myPackages '(elpy
                        smartparens
+                       nixpkgs-fmt
                        pdf-tools
                        yafolding
                        nix-mode
@@ -463,8 +464,10 @@ Run ~nerd-icons-install-fonts~
 
 ** Nix Mode
 #+BEGIN_SRC emacs-lisp
-(use-package nix-mode
-  :mode "\\.nix\\'")
+  (use-package nix-mode
+    :mode "\\.nix\\'")
+
+  (add-hook 'nix-mode-hook 'nixpkgs-fmt-on-save-mode)
 #+END_SRC
 
 ** Direnv Mode

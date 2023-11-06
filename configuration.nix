@@ -35,17 +35,21 @@
   };
 
   services = {
+    emacs = {
+      enable = true;
+      package = pkgs.emacs29;
+    };
     upower.enable = true;
     ntp.enable = true;
     picom = {
       enable = true;
-      activeOpacity = 1.0;
-      inactiveOpacity = 1.0;
-      backend = "glx";
-      fade = true;
-      fadeDelta = 5;
-      shadow = true;
-      shadowOpacity = 0.75;
+      # activeOpacity = 1.0;
+      # inactiveOpacity = 1.0;
+      # backend = "glx";
+      # fade = true;
+      # fadeDelta = 5;
+      # shadow = true;
+      # shadowOpacity = 0.75;
     };
     xserver = {
       layout = "us";
@@ -78,7 +82,7 @@
       isNormalUser = true;
       home = "/home/albertodvp";
       extraGroups = [ "wheel" "networkmanager" "audio" "jackaudio" "docker" ];
-      hashedPassword = ""; # TODO: put the hash obtained with the `mkpasswd` command";
+      hashedPassword = "";
     };
   };
   programs = {
@@ -115,7 +119,7 @@
           userName = "Alberto Fanton";
           extraConfig = {
             core = {
-              editor = "emacs -nw";
+              editor = "emacsclient -c -nw";
               pager = "delta";
             };
             pull.rebase = true;
@@ -141,9 +145,6 @@
             cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d";
           };
         };
-        emacs = {
-          enable = true;
-        };
         zoxide.enable = true;
       };
       home.packages = with pkgs; [
@@ -168,6 +169,7 @@
         dunst
         nixpkgs-fmt
         pavucontrol
+        discord-ptb
       ];
     };
   };
