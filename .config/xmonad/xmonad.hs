@@ -242,12 +242,13 @@ myEventHook = fullscreenEventHook
 -- Perform an arbitrary action on each internal state change or X event.
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
-myLogHook h = dynamicLogWithPP $ def
+myLogHook [xmproc0,xmproc1,xmproc2] = dynamicLogWithPP $ def
   { ppLayout = wrap "(<fc=#e4b63c>" "</fc>)"
   , ppTitleSanitize = const ""
   , ppVisible = wrap "(" ")"
   , ppCurrent = wrap "<fc=#b8473d>[</fc><fc=#7cac7a>" "</fc><fc=#b8473d>]</fc>"
-  , ppOutput = hPutStrLn h
+  , ppOutput = \x -> hPutStrLn xmproc0 x  >> hPutStrLn xmproc1 x  >> hPutStrLn xmproc2 x
+
   }
 ------------------------------------------------------------------------
 -- Startup hook
@@ -266,7 +267,10 @@ myStartupHook = return ()
 -- Run xmonad with the settings you specify. No need to modify this.
 --
 main = do
-  xmobarProc <- spawnPipe "xmobar -x 0 .config/xmobar/xmobar.hs"
+  xmobarProc0 <- spawnPipe "xmobar -x 0 .config/xmobar/xmobar.hs"
+  xmobarProc1 <- spawnPipe "xmobar -x 1 .config/xmobar/xmobar.hs"
+  xmobarProc2 <- spawnPipe "xmobar -x 2 .config/xmobar/xmobar.hs"
+  _ <- spawnPipe "xset r rate 250 60"
   xmonad $ docks def {
       -- simple stuff
         terminal           = myTerminal,
@@ -286,6 +290,6 @@ main = do
         layoutHook         = myLayout,
         manageHook         = myManageHook,
         handleEventHook    = myEventHook,
-        logHook            = myLogHook xmobarProc,
+        logHook            = myLogHook [xmobarProc0, xmobarProc1, xmobarProc2],
         startupHook        = myStartupHook
     }
