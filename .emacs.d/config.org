@@ -9,14 +9,17 @@
 #+BEGIN_SRC emacs-lisp
   (defvar myPackages '(elpy
                        smartparens
+                       ormolu
                        nixpkgs-fmt
                        pdf-tools
                        yafolding
                        nix-mode
                        flycheck
+                       flycheck-rust
                        ace-jump-mode
                        ripgrep
                        exec-path-from-shell
+                       sudo-edit
                        multiple-cursors
                        smartparens
                        hasklig-mode
@@ -37,6 +40,7 @@
                        markdown-mode
                        org
                        org-journal
+                       rust-mode
                        org-bullets
                        ob-async
                        ob-elixir
@@ -82,6 +86,8 @@
       (package-install pkg))))
 #+END_SRC
 
+#+RESULTS:
+
 ** Theme   
 #+BEGIN_SRC emacs-lisp
   (use-package doom-themes
@@ -118,6 +124,8 @@
   (use-package expand-region
   :ensure t
   :bind ("M-m" . er/expand-region))
+
+  (global-set-key (kbd "C-c C-r") 'sudo-edit)
 #+END_SRC
 
 ** Setup
@@ -177,7 +185,6 @@
           minions-mode-line-delimiters '("" . ""))
     (minions-mode 1))
   (global-hl-line-mode)
-
 #+END_SRC
 
 
@@ -406,7 +413,12 @@ Run ~nerd-icons-install-fonts~
 
 ** Rust
 #+BEGIN_SRC emacs-lisp
+  (require 'rust-mode)
+  (with-eval-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 #+END_SRC
+
+
 ** PHP
 #+BEGIN_SRC emacs-lisp 
 (add-hook 'php-mode-hook 'lsp)
@@ -434,8 +446,12 @@ Run ~nerd-icons-install-fonts~
 
   (use-package poetry
    :ensure t)
-  ;; (add-hook 'python-mode-hook 'python-isort-on-save-mode)
-  ;; (add-hook 'python-mode-hook 'py-yapf-enable-on-save)
+  (use-package python-isort
+    :ensure t
+    :config (add-hook 'python-mode-hook 'python-isort-on-save-mode))
+  (use-package yapfify
+    :ensure t
+    :config (add-hook 'python-mode-hook 'yapf-mode))
 #+END_SRC
 
 

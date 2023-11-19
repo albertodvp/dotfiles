@@ -1,9 +1,7 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
-
 { config, pkgs, ... }:
-
 {
   imports =
     [
@@ -173,6 +171,7 @@
       ];
     };
   };
+  security.sudo.enable = true;
   environment = {
     systemPackages = with pkgs; [
       git
@@ -194,9 +193,18 @@
       WORKON_HOME = "$HOME/.virtualenvs";
     };
   };
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     hasklig
     (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Hack" ]; })
   ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    substituters = [
+      "https://cache.iog.io"
+    ];
+    trusted-public-keys = [
+      "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
+    ];
+  };
   system.stateVersion = "23.05";
 }
