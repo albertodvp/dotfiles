@@ -2,7 +2,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Alberto Fanton")
-  (setq user-mail-address "alberto.fanton@prima.it")
+  (setq user-mail-address "alberto.fanton@protonmail.com")
 #+END_SRC
 
 ** Packages
@@ -93,16 +93,13 @@
   (use-package doom-themes
     :ensure t
     :config
-    (load-theme 'doom-one t)
+    (load-theme 'doom-tomorrow-night t)
+    (doom-tomorrow-night t)
   (doom-themes-visual-bell-config))
-
-  ;; (use-package solaire-mode
-  ;; :ensure t
-  ;; :config
-  ;; (solaire-global-mode +1))
-
 #+END_SRC
 
+#+RESULTS:
+: t
 
 ** Misc
 #+BEGIN_SRC emacs-lisp
@@ -126,6 +123,8 @@
   :bind ("M-m" . er/expand-region))
 
   (global-set-key (kbd "C-c C-r") 'sudo-edit)
+  (setq visible-bell t)
+  (setq ring-bell-function 'ignore)
 #+END_SRC
 
 ** Setup
@@ -341,16 +340,14 @@ Run ~nerd-icons-install-fonts~
 
   (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
   (define-key haskell-mode-map (kbd "<f9>") 'haskell-mode-format-imports)
-  ;(define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def)
-  ;(define-key haskell-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
   (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)  
   (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
 
   (custom-set-variables
-   ;;'(haskell-stylish-on-save t)
    '(haskell-process-suggest-remove-import-lines t)
    '(haskell-process-auto-import-loaded-modules t)
    '(haskell-tags-on-save t)
+   '(haskell-stylish-on-save nil)   
    '(haskell-process-log t)
    '(haskell-process-suggest-hoogle-imports t))
    '(haskell-process-args-stack-ghci '("--ghci-options=-ferror-spans"))
@@ -371,7 +368,6 @@ Run ~nerd-icons-install-fonts~
              (lsp--set-configuration
               '(
                 (:haskell (:plugin (:tactics (:config (:timeout_duration 5)))))
-                (:haskell (:formattingProviderplugin :stylish))
                 )
               )))
 #+END_SRC
