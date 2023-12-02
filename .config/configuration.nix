@@ -33,11 +33,19 @@
   };
 
   services = {
+    udev.packages = [ pkgs.bazecor ];
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+
     emacs = {
       enable = true;
-      package = pkgs.emacs29;
+      package = pkgs.emacs-unstable;
     };
-    upower.enable = true;
+
     ntp.enable = true;
     picom = {
       enable = true;
@@ -66,12 +74,16 @@
   };
 
 
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
   hardware.bluetooth.enable = true;
-
-  nixpkgs.config = {
-    allowUnfree = true;
+  nixpkgs = {
+    overlays = [
+      (import (builtins.fetchTarball {
+        url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz;
+      }))
+    ];
+    config = {
+      allowUnfree = true;
+    };
   };
   users = {
     mutableUsers = false;
@@ -143,6 +155,13 @@
             cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d";
           };
         };
+        obs-studio = {
+          enable = true;
+          plugins = with pkgs.obs-studio-plugins; [
+            obs-backgroundremoval
+            obs-pipewire-audio-capture
+          ];
+        };
         zoxide.enable = true;
       };
       home.packages = with pkgs; [
@@ -168,10 +187,15 @@
         nixpkgs-fmt
         pavucontrol
         discord-ptb
+        vlc
+        tree-sitter
       ];
     };
   };
-  security.sudo.enable = true;
+  security = {
+    rtkit.enable = true;
+    sudo.enable = true;
+  };
   environment = {
     systemPackages = with pkgs; [
       git
@@ -179,6 +203,7 @@
       wget
       docker-compose
       nodejs
+      bazecor
     ];
     sessionVariables = rec {
       XDG_CACHE_HOME = "$HOME/.cache";
