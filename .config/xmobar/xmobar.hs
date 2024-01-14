@@ -1,9 +1,9 @@
 Config { 
    -- appearance
-     font =         "Hack Nerd Font 12"
+     font =         "Hack Nerd Font 24"
    , bgColor =      "black"
    , fgColor =      "#646464"
-   , position =     Top
+   , position =     TopSize C 100 50
    , border =       BottomB
    , borderColor =  "#646464"
 

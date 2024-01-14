@@ -7,22 +7,22 @@
 -- Normally, you'd only override those defaults you care about.
 --
 
-import qualified Data.Map                     as M
+import qualified Data.Map                       as M
 import           Data.Monoid
 import           System.Exit
 import           XMonad
+import           XMonad.Actions.PhysicalScreens
 import           XMonad.Actions.UpdatePointer
+import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Layout.Spacing
-import qualified XMonad.StackSet              as W
+import qualified XMonad.StackSet                as W
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
-import           XMonad.Actions.PhysicalScreens
-import           XMonad.Hooks.DynamicLog
 
-myTerminal      = "termonad"
+myTerminal      = "alacritty"
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -67,12 +67,12 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
     , ((modm .|. shiftMask, xK_b), spawn "firefox")
-    , ((modm .|. shiftMask, xK_t), spawn "emacsclient -c")
+    , ((modm , xK_y), spawn "emacsclient -c")
 
     , ((modm              , xK_Escape), spawn ".bin/layout_switch.sh")
 
     -- launch rofi
-    , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 30' -show-icons")
+    , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 50' -show-icons")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
@@ -111,7 +111,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_l     ), sendMessage Expand)
 
     -- Push window back into tiling
-    , ((modm,               xK_t     ), withFocused $ windows . W.sink)
+    , ((modm .|. shiftMask,               xK_y     ), withFocused $ windows . W.sink)
 
     -- Increment the number of windows in the master area
     , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
@@ -132,7 +132,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm              , xK_q     ), spawn "pkill xmobar; xmonad --recompile; xmonad --restart")
     -- Lock the screen
     , ((modm .|. shiftMask , xK_l     ), spawn "slock")
-    
+
     ]
     ++
 
@@ -151,7 +151,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     --
     -- TODO not very robust, the order of the monitor changes sometimes
     [((modm .|. mask, key), f sc)
-    | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
+    | (key, sc) <- zip [xK_w, xK_e, xK_r, xK_t] [0..]
     , (f, mask) <- [(viewScreen def, 0), (sendToScreen def, shiftMask)]]
 
 ------------------------------------------------------------------------
@@ -270,7 +270,10 @@ main = do
   xmobarProc0 <- spawnPipe "xmobar -x 0 .config/xmobar/xmobar.hs"
   xmobarProc1 <- spawnPipe "xmobar -x 1 .config/xmobar/xmobar.hs"
   xmobarProc2 <- spawnPipe "xmobar -x 2 .config/xmobar/xmobar.hs"
-  _ <- spawnPipe "xset r rate 250 60"
+  xmobarProc2 <- spawnPipe "xmobar -x 3 .config/xmobar/xmobar.hs"
+  -- Refresh: the first number is after how many ms the key will start repeating and the second number is the repetitions per second
+  _ <- spawnPipe "feh --bg-center ~/Pictures/nix-wallpaper-gear.png"
+  _ <- spawnPipe "xset r rate 300 30"
   xmonad $ docks def {
       -- simple stuff
         terminal           = myTerminal,

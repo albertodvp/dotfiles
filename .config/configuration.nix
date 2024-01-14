@@ -2,30 +2,44 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 { config, pkgs, ... }:
+let
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+in
 {
   imports =
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      <home-manager/nixos>
+      (import "${home-manager}/nixos")
+      ./cachix.nix
     ];
-
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.grub = {
+    enable = true;
+    device = "nodev";
+    efiSupport = true;
+    enableCryptodisk = true;
+  };
+  boot.initrd.luks.devices = {
+    luksroot = {
+      device = "TODO";
+      preLVM = true;
+      allowDiscards = true;
+    };
+  };
+  networking = {
+    hostName = "nixos";
+    networkmanager.enable = true;
+    firewall.enable = true;
+    extraHosts = ''
+      127.0.0.1 dev.domain
+    '';
+    useDHCP = false;
+    interfaces.wlp0s20f3.useDHCP = true;
 
-  virtualisation.docker.enable = true;
-  networking.hostName = "nixos";
-  networking.networkmanager.enable = true;
-  networking.extraHosts = ''
-    127.0.0.1 dev.domain
-  '';
-
-
+  };
   time.timeZone = "Europe/Rome";
 
-  networking.useDHCP = false;
-  networking.interfaces.wlp0s20f3.useDHCP = true;
   i18n.defaultLocale = "en_US.UTF-8";
   console = {
     font = "Lat2-Terminus16";
@@ -33,6 +47,10 @@
   };
 
   services = {
+    clamav = {
+      daemon.enable = true;
+      updater.enable = true;
+    };
     udev.packages = [ pkgs.bazecor ];
     pipewire = {
       enable = true;
@@ -45,19 +63,18 @@
       enable = true;
       package = pkgs.emacs-unstable;
     };
-
     ntp.enable = true;
     picom = {
       enable = true;
-      # activeOpacity = 1.0;
-      # inactiveOpacity = 1.0;
-      # backend = "glx";
-      # fade = true;
-      # fadeDelta = 5;
-      # shadow = true;
-      # shadowOpacity = 0.75;
+      activeOpacity = 1.0;
+      inactiveOpacity = 1.0;
+      fade = true;
+      fadeDelta = 5;
+      shadow = true;
+      shadowOpacity = 0.75;
     };
     xserver = {
+      dpi = 180;
       layout = "us";
       enable = true;
       libinput.enable = true;
@@ -72,9 +89,9 @@
       };
     };
   };
-
-
-  hardware.bluetooth.enable = true;
+  hardware = {
+    bluetooth.enable = true;
+  };
   nixpkgs = {
     overlays = [
       (import (builtins.fetchTarball {
@@ -92,12 +109,17 @@
       isNormalUser = true;
       home = "/home/albertodvp";
       extraGroups = [ "wheel" "networkmanager" "audio" "jackaudio" "docker" ];
-      hashedPassword = "";
+      hashedPassword = "TODO";
     };
   };
   programs = {
     zsh.enable = true;
     slock.enable = true;
+    gnupg.agent = {
+      enable = true;
+      pinentryFlavor = "curses";
+      enableSSHSupport = true;
+    };
   };
 
   home-manager = {
@@ -127,6 +149,10 @@
           package = pkgs.gitAndTools.gitFull;
           userEmail = "alberto.fanton@protonmail.com";
           userName = "Alberto Fanton";
+          signing = {
+            key = "63FD3A4F4832946CB8088E3CC852405269E7A087";
+            signByDefault = true;
+          };
           extraConfig = {
             core = {
               editor = "emacsclient -c -nw";
@@ -155,13 +181,6 @@
             cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d";
           };
         };
-        obs-studio = {
-          enable = true;
-          plugins = with pkgs.obs-studio-plugins; [
-            obs-backgroundremoval
-            obs-pipewire-audio-capture
-          ];
-        };
         zoxide.enable = true;
       };
       home.packages = with pkgs; [
@@ -169,7 +188,7 @@
         feh
         rofi
         xmobar
-        termonad
+        alacritty
         htop
         gimp-with-plugins
         python39
@@ -189,6 +208,14 @@
         discord-ptb
         vlc
         tree-sitter
+        gnumake
+        gcc
+        nixd
+        actionlint
+        nil
+        fzf
+        gnupg
+        (vivaldi.override { proprietaryCodecs = true; enableWidevine = false; })
       ];
     };
   };
@@ -210,19 +237,28 @@
       XDG_CONFIG_HOME = "$HOME/.config";
       XDG_DATA_HOME = "$HOME/.local/share";
       XDG_STATE_HOME = "$HOME/.local/state";
-
       XDG_BIN_HOME = "$HOME/.local/bin";
       PATH = [
         "${XDG_BIN_HOME}"
       ];
       WORKON_HOME = "$HOME/.virtualenvs";
     };
+    variables = {
+      GDK_SCALE = "2";
+      GDK_DPI_SCALE = "0.5";
+      _JAVA_OPTIONS = "-Dsun.java2d.uiScale=2";
+    };
   };
   fonts.packages = with pkgs; [
     hasklig
     (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Hack" ]; })
   ];
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
   nix.settings = {
+    cores = 11;
     experimental-features = [ "nix-command" "flakes" ];
     substituters = [
       "https://cache.iog.io"
@@ -231,5 +267,8 @@
       "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
     ];
   };
-  system.stateVersion = "23.05";
+  system.stateVersion = "24.05";
 }
+
+# Use the systemd-boot EFI boot loader.
+
