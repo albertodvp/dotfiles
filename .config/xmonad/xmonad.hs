@@ -72,7 +72,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm              , xK_Escape), spawn ".bin/layout_switch.sh")
 
     -- launch rofi
-    , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 50' -show-icons")
+    , ((modm,               xK_p     ), spawn "rofi -modi drun,run -show drun -theme Monokai -font 'DejaVu Sans 25' -show-icons")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
@@ -270,10 +270,9 @@ main = do
   xmobarProc0 <- spawnPipe "xmobar -x 0 .config/xmobar/xmobar.hs"
   xmobarProc1 <- spawnPipe "xmobar -x 1 .config/xmobar/xmobar.hs"
   xmobarProc2 <- spawnPipe "xmobar -x 2 .config/xmobar/xmobar.hs"
-  xmobarProc2 <- spawnPipe "xmobar -x 3 .config/xmobar/xmobar.hs"
-  -- Refresh: the first number is after how many ms the key will start repeating and the second number is the repetitions per second
   _ <- spawnPipe "feh --bg-center ~/Pictures/nix-wallpaper-gear.png"
-  _ <- spawnPipe "xset r rate 300 30"
+  -- Refresh: the first number is after how many ms the key will start repeating and the second number is the repetitions per second
+  _ <- spawnPipe "xset r rate 300 60"
   xmonad $ docks def {
       -- simple stuff
         terminal           = myTerminal,
